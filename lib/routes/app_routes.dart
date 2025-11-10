@@ -9,7 +9,20 @@ import '../features/home/views/home_screen.dart';
 import '../features/movie_details/presentation/details_screen.dart';
 import '../features/series_details/presentation/series_details_screen.dart';
 import '../features/search/presentation/search_screen.dart';
+import '../features/inbox/presentation/inbox_screen.dart';
+import '../features/chat/presentation/chat_screen.dart';
+import '../features/live_tv/presentation/live_tv_screen.dart';
+import '../features/live_tv/presentation/channel_categories_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/profile/presentation/edit_profile_screen.dart';
+import '../features/profile/presentation/help_support_screen.dart';
+import '../features/profile/presentation/privacy_policy_screen.dart';
+import '../features/profile/presentation/faq_screen.dart';
+import '../features/profile/presentation/change_password_screen.dart';
+import '../features/marketplace/presentation/marketplace_screen.dart';
+import '../features/marketplace/presentation/product_details_screen.dart';
+import '../features/marketplace/presentation/cart_screen.dart';
+import '../features/marketplace/presentation/checkout_screen.dart';
 import '../features/home/data/movie_model.dart';
 
 /// Centralized app routing configuration
@@ -25,9 +38,22 @@ class AppRoutes {
   static const String interest = '/interest';
   static const String home = '/home';
   static const String search = '/search';
+  static const String inbox = '/inbox';
+  static const String chat = '/chat';
+  static const String liveTv = '/live-tv';
+  static const String channelCategories = '/channel-categories';
   static const String movieDetails = '/movie-details';
   static const String seriesDetails = '/series-details';
   static const String profile = '/profile';
+  static const String editProfile = '/edit-profile';
+  static const String helpSupport = '/help-support';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String faq = '/faq';
+  static const String changePassword = '/change-password';
+  static const String marketplace = '/marketplace';
+  static const String productDetails = '/product-details';
+  static const String cart = '/cart';
+  static const String checkout = '/checkout';
 
   /// Generate routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -81,6 +107,37 @@ class AppRoutes {
           settings: settings,
         );
 
+      case inbox:
+        return MaterialPageRoute(
+          builder: (_) => const InboxScreen(),
+          settings: settings,
+        );
+
+      case chat:
+        final args = settings.arguments as Map<String, String>?;
+        if (args == null) {
+          return _errorRoute('Chat data is required');
+        }
+        return MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            name: args['name'] ?? 'Unknown',
+            avatar: args['avatar'] ?? 'U',
+          ),
+          settings: settings,
+        );
+
+      case liveTv:
+        return MaterialPageRoute(
+          builder: (_) => const LiveTvScreen(),
+          settings: settings,
+        );
+
+      case channelCategories:
+        return MaterialPageRoute(
+          builder: (_) => const ChannelCategoriesScreen(),
+          settings: settings,
+        );
+
       case movieDetails:
         final movie = settings.arguments as Movie?;
         if (movie == null) {
@@ -104,6 +161,60 @@ class AppRoutes {
       case profile:
         return MaterialPageRoute(
           builder: (_) => const ProfileScreen(),
+          settings: settings,
+        );
+
+      case editProfile:
+        return MaterialPageRoute(
+          builder: (_) => const EditProfileScreen(),
+          settings: settings,
+        );
+
+      case helpSupport:
+        return MaterialPageRoute(
+          builder: (_) => const HelpSupportScreen(),
+          settings: settings,
+        );
+
+      case privacyPolicy:
+        return MaterialPageRoute(
+          builder: (_) => const PrivacyPolicyScreen(),
+          settings: settings,
+        );
+
+      case faq:
+        return MaterialPageRoute(
+          builder: (_) => const FaqScreen(),
+          settings: settings,
+        );
+
+      case changePassword:
+        return MaterialPageRoute(
+          builder: (_) => const ChangePasswordScreen(),
+          settings: settings,
+        );
+
+      case marketplace:
+        return MaterialPageRoute(
+          builder: (_) => const MarketplaceScreen(),
+          settings: settings,
+        );
+
+      case productDetails:
+        return MaterialPageRoute(
+          builder: (_) => const ProductDetailsScreen(),
+          settings: settings,
+        );
+
+      case cart:
+        return MaterialPageRoute(
+          builder: (_) => const CartScreen(),
+          settings: settings,
+        );
+
+      case checkout:
+        return MaterialPageRoute(
+          builder: (_) => const CheckoutScreen(),
           settings: settings,
         );
 
@@ -137,8 +248,21 @@ class AppRoutes {
         interest,
         home,
         search,
+        inbox,
+        chat,
+        liveTv,
+        channelCategories,
         movieDetails,
         seriesDetails,
         profile,
+        editProfile,
+        helpSupport,
+        privacyPolicy,
+        faq,
+        changePassword,
+        marketplace,
+        productDetails,
+        cart,
+        checkout,
       ];
 }

@@ -32,6 +32,30 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  void _handleBottomNavTap(int index) {
+    switch (index) {
+      case 0:
+        // Home - already here
+        break;
+      case 1:
+        // Inbox
+        Navigator.of(context).pushNamed('/inbox');
+        break;
+      case 2:
+        // Marketplace
+        Navigator.of(context).pushNamed('/marketplace');
+        break;
+      case 3:
+        // Live TV
+        Navigator.of(context).pushNamed('/live-tv');
+        break;
+      case 4:
+        // Profile
+        Navigator.of(context).pushNamed('/profile');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           setState(() {
             _selectedNavIndex = index;
           });
+          _handleBottomNavTap(index);
         },
       ),
     );
