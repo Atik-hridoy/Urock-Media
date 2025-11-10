@@ -41,4 +41,18 @@ class AppColors {
   // Overlay colors
   static const Color overlay = Color(0x80000000);
   static const Color shimmer = Color(0xFF2A2A2A);
+
+  // Gold gradient colors
+  static const Color goldDark = Color(0xFF8B7520);
+  static const Color goldLight = Color(0xFFB8941D);
+
+  // Gradients
+  static const LinearGradient primaryGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      goldDark,
+      goldLight,
+    ],
+  );
 }

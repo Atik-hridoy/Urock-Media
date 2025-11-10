@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/primary_button.dart';
 
 /// Onboarding screen showing app introduction
 class OnboardingScreen extends StatelessWidget {
@@ -66,29 +67,11 @@ class OnboardingScreen extends StatelessWidget {
                   const SizedBox(height: 40),
                   
                   // Get Started Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacementNamed('/home');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD4AF37), // Gold color
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                  PrimaryButton(
+                    text: 'Get Started',
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/auth');
+                    },
                   ),
                   
                   const SizedBox(height: 40),
