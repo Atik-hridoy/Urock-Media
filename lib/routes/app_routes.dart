@@ -5,15 +5,15 @@ import '../features/auth/views/sign_in_screen.dart';
 import '../features/auth/views/sign_up_screen.dart';
 import '../features/auth/views/otp_screen.dart';
 import '../features/onboarding/views/interest_screen.dart';
-import '../features/home/views/home_screen.dart';
-import '../features/movie_details/presentation/details_screen.dart';
-import '../features/series_details/presentation/series_details_screen.dart';
+import '../features/home/home_entry.dart';
+import '../features/movie_details/movie_details_entry.dart';
+import '../features/series/series_details_entry.dart';
 import '../features/search/presentation/search_screen.dart';
 import '../features/inbox/presentation/inbox_screen.dart';
 import '../features/chat/presentation/chat_screen.dart';
 import '../features/live_tv/presentation/live_tv_screen.dart';
 import '../features/live_tv/presentation/channel_categories_screen.dart';
-import '../features/profile/presentation/profile_screen.dart';
+import '../features/profile/profile_entry.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/help_support_screen.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
@@ -97,7 +97,7 @@ class AppRoutes {
 
       case home:
         return MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const HomeEntry(),
           settings: settings,
         );
 
@@ -144,7 +144,7 @@ class AppRoutes {
           return _errorRoute('Movie data is required');
         }
         return MaterialPageRoute(
-          builder: (_) => DetailsScreen(movie: movie),
+          builder: (_) => MovieDetailsEntry(movie: movie),
           settings: settings,
         );
 
@@ -154,13 +154,13 @@ class AppRoutes {
           return _errorRoute('Series data is required');
         }
         return MaterialPageRoute(
-          builder: (_) => SeriesDetailsScreen(series: series),
+          builder: (_) => SeriesDetailsEntry(series: series),
           settings: settings,
         );
 
       case profile:
         return MaterialPageRoute(
-          builder: (_) => const ProfileScreen(),
+          builder: (_) => const ProfileEntry(),
           settings: settings,
         );
 

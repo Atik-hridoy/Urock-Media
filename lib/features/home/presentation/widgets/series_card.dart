@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../data/movie_model.dart';
+import '../../../home/data/movie_model.dart';
 
-/// Card widget for displaying a single movie
-class MovieCard extends StatelessWidget {
-  final Movie movie;
+/// Series card for TV layout with navigation to series details
+class SeriesCard extends StatelessWidget {
+  final Movie series;
 
-  const MovieCard({
-    super.key,
-    required this.movie,
-  });
+  const SeriesCard({super.key, required this.series});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(
-          '/movie-details',
-          arguments: movie,
+          '/series-details',
+          arguments: series,
         );
       },
       child: SizedBox(
@@ -31,7 +28,7 @@ class MovieCard extends StatelessWidget {
               _buildPoster(context),
               const SizedBox(height: AppSizes.spacingSM),
               _buildTitle(context),
-              _buildRating(context),
+              _buildSeasonInfo(context),
             ],
           ),
         ),
@@ -59,11 +56,11 @@ class MovieCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // TODO: Replace with actual image when API is connected
+            // TODO: Replace with actual series poster when API is connected
             Container(
               color: AppColors.surface,
               child: const Icon(
-                Icons.movie,
+                Icons.tv,
                 size: AppSizes.iconXL,
                 color: AppColors.grey,
               ),
@@ -81,6 +78,29 @@ class MovieCard extends StatelessWidget {
                 ),
               ),
             ),
+            // Series badge
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.goldLight,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'SERIES',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -89,7 +109,7 @@ class MovieCard extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Text(
-      movie.title,
+      series.title,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -98,26 +118,21 @@ class MovieCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRating(BuildContext context) {
+  Widget _buildSeasonInfo(BuildContext context) {
     return Row(
       children: [
         const Icon(
-          Icons.star,
+          Icons.playlist_play,
           size: AppSizes.iconXS,
-          color: AppColors.warning,
+          color: AppColors.goldLight,
         ),
         const SizedBox(width: AppSizes.spacingXS),
         Text(
-          movie.formattedRating,
-          style: Theme.of(context).textTheme.bodyMedium,
+          '5 Seasons',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.goldLight,
+              ),
         ),
-        if (movie.releaseYear != null) ...[
-          const SizedBox(width: AppSizes.spacingSM),
-          Text(
-            '• ${movie.releaseYear}',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
       ],
     );
   }

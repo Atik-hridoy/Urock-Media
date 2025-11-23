@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/responsive_scale.dart';
 
 /// Terms and conditions checkbox widget
 class TermsCheckbox extends StatelessWidget {
@@ -14,7 +15,21 @@ class TermsCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    ResponsiveScale.init(context);
+    final bool isLargeScreen = ResponsiveScale.isDesktop || ResponsiveScale.isTV;
+
+    double? maxWidth;
+    if (isLargeScreen) {
+      final double minWidth = 320;
+      final double maxAllowed = ResponsiveScale.isTV ? 720 : 520;
+      final double targetWidth = ResponsiveScale.screenWidth *
+          (ResponsiveScale.isTV ? 0.32 : 0.4);
+      maxWidth = targetWidth.clamp(minWidth, maxAllowed).toDouble();
+    }
+
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           width: 24,
@@ -34,9 +49,10 @@ class TermsCheckbox extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
+        const SizedBox(width: 12),
+        Flexible(
           child: Wrap(
+            alignment: WrapAlignment.start,
             children: [
               Text(
                 'I agree to the ',
@@ -83,5 +99,17 @@ class TermsCheckbox extends StatelessWidget {
         ),
       ],
     );
+
+    if (maxWidth != null) {
+      return Align(
+        alignment: Alignment.center,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: content,
+        ),
+      );
+    }
+
+    return content;
   }
 }

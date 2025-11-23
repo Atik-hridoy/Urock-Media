@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_assets.dart';
+import '../../../core/utils/responsive_scale.dart';
 
 /// Google sign-in button widget
 class GoogleSignInButton extends StatelessWidget {
@@ -12,8 +13,19 @@ class GoogleSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
+    final bool isLargeScreen = ResponsiveScale.isDesktop || ResponsiveScale.isTV;
+
+    double? effectiveWidth;
+    if (isLargeScreen) {
+      final double minWidth = 320;
+      final double maxWidth = ResponsiveScale.isTV ? 640 : 500;
+      final double targetWidth = ResponsiveScale.screenWidth *
+          (ResponsiveScale.isTV ? 0.3 : 0.35);
+      effectiveWidth = targetWidth.clamp(minWidth, maxWidth).toDouble();
+    }
+
+    final button = SizedBox(
+      width: effectiveWidth ?? double.infinity,
       height: 56,
       child: OutlinedButton.icon(
         onPressed: onPressed,
@@ -38,5 +50,14 @@ class GoogleSignInButton extends StatelessWidget {
         ),
       ),
     );
+
+    if (effectiveWidth != null) {
+      return Align(
+        alignment: Alignment.center,
+        child: button,
+      );
+    }
+
+    return button;
   }
 }

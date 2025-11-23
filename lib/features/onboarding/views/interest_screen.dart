@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/responsive_scale.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../controllers/interest_controller.dart';
 import '../widgets/genre_chip.dart';
@@ -105,29 +106,42 @@ class _InterestScreenState extends State<InterestScreen> {
   }
 
   Widget _buildBottomButtons() {
+    final bool isLargeScreen = ResponsiveScale.isDesktop || ResponsiveScale.isTV;
+    double? skipWidth;
+    if (isLargeScreen) {
+      final double minWidth = 320;
+      final double maxWidth = ResponsiveScale.isTV ? 640 : 500;
+      final double targetWidth = ResponsiveScale.screenWidth *
+          (ResponsiveScale.isTV ? 0.3 : 0.35);
+      skipWidth = targetWidth.clamp(minWidth, maxWidth).toDouble();
+    }
+
     return Container(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         children: [
           // Skip Button
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () => _controller.skip(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: skipWidth ?? double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () => _controller.skip(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Skip',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                child: const Text(
+                  'Skip',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),

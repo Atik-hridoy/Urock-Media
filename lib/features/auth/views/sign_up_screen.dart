@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/responsive_scale.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../controllers/sign_up_controller.dart';
 import '../widgets/auth_logo.dart';
@@ -35,59 +36,76 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveScale.init(context);
+    final bool isLargeScreen = ResponsiveScale.isDesktop || ResponsiveScale.isTV;
+    final double maxWidth = isLargeScreen
+        ? ResponsiveScale.maxContentWidth.clamp(720.0, 960.0)
+        : double.infinity;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const AuthHeader(
-                title: 'Create Your Account',
-                subtitle: 'Spread kindness, inspire others, and be\npart of a positive community.',
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const AuthHeader(
+                    title: 'Create Your Account',
+                    subtitle: 'Spread kindness, inspire others, and be\npart of a positive community.',
+                  ),
+                  const SizedBox(height: 24),
+                  AuthTextField(
+                    controller: _controller.fullNameController,
+                    hintText: 'Enter your full name',
+                  ),
+                  const SizedBox(height: 12),
+                  AuthTextField(
+                    controller: _controller.usernameController,
+                    hintText: 'Choose an unique username',
+                  ),
+                  const SizedBox(height: 12),
+                  AuthTextField(
+                    controller: _controller.emailController,
+                    hintText: 'Enter your email',
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPasswordField(),
+                  const SizedBox(height: 12),
+                  _buildConfirmPasswordField(),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: _buildTermsCheckbox(),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSignUpButton(),
+                  const SizedBox(height: 20),
+                  const OrDivider(),
+                  const SizedBox(height: 20),
+                  GoogleSignInButton(
+                    onPressed: () async {
+                      final success = await _controller.signUpWithGoogle();
+                      if (success && mounted) {
+                        _controller.navigateToOtp(context);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  SignInLink(
+                    onPressed: () => _controller.navigateToSignIn(context),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              AuthTextField(
-                controller: _controller.fullNameController,
-                hintText: 'Enter your full name',
-              ),
-              const SizedBox(height: 12),
-              AuthTextField(
-                controller: _controller.usernameController,
-                hintText: 'Choose an unique username',
-              ),
-              const SizedBox(height: 12),
-              AuthTextField(
-                controller: _controller.emailController,
-                hintText: 'Enter your email',
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 12),
-              _buildPasswordField(),
-              const SizedBox(height: 12),
-              _buildConfirmPasswordField(),
-              const SizedBox(height: 20),
-              _buildTermsCheckbox(),
-              const SizedBox(height: 20),
-              _buildSignUpButton(),
-              const SizedBox(height: 20),
-              const OrDivider(),
-              const SizedBox(height: 20),
-              GoogleSignInButton(
-                onPressed: () async {
-                  final success = await _controller.signUpWithGoogle();
-                  if (success && mounted) {
-                    _controller.navigateToOtp(context);
-                  }
-                },
-              ),
-              const SizedBox(height: 24),
-              SignInLink(
-                onPressed: () => _controller.navigateToSignIn(context),
-              ),
-            ],
+            ),
           ),
         ),
       ),
