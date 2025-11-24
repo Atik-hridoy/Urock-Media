@@ -11,11 +11,12 @@ import '../features/series/series_details_entry.dart';
 import '../features/search/presentation/search_screen.dart';
 import '../features/inbox/presentation/inbox_screen.dart';
 import '../features/chat/presentation/chat_screen.dart';
-import '../features/live_tv/presentation/live_tv_screen.dart';
-import '../features/live_tv/presentation/channel_categories_screen.dart';
+import '../features/live_tv/live_tv_entry.dart';
+import '../features/live_tv/presentation/tv_live_tv_screen.dart';
+import '../features/live_tv/channel_categories_entry.dart';
 import '../features/profile/profile_entry.dart';
-import '../features/profile/presentation/edit_profile_screen.dart';
-import '../features/profile/presentation/help_support_screen.dart';
+import '../features/profile/edit_profile_entry.dart';
+import '../features/profile/help_support_entry.dart';
 import '../features/profile/presentation/privacy_policy_screen.dart';
 import '../features/profile/presentation/faq_screen.dart';
 import '../features/profile/presentation/change_password_screen.dart';
@@ -41,6 +42,7 @@ class AppRoutes {
   static const String inbox = '/inbox';
   static const String chat = '/chat';
   static const String liveTv = '/live-tv';
+  static const String tvLiveTv = '/tv-live-tv';
   static const String channelCategories = '/channel-categories';
   static const String movieDetails = '/movie-details';
   static const String seriesDetails = '/series-details';
@@ -55,9 +57,13 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String checkout = '/checkout';
 
-  /// Generate routes
+  /// Generate routes with TV detection
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+    // Check if route should be redirected to TV version
+    String routeName = settings.name ?? splash;
+    
+    // TV detection will be handled at the widget level for better context access
+    switch (routeName) {
       case splash:
         return MaterialPageRoute(
           builder: (_) => const SplashScreen(),
@@ -128,13 +134,19 @@ class AppRoutes {
 
       case liveTv:
         return MaterialPageRoute(
-          builder: (_) => const LiveTvScreen(),
+          builder: (_) => const LiveTvEntry(),
+          settings: settings,
+        );
+
+      case tvLiveTv:
+        return MaterialPageRoute(
+          builder: (_) => const TvLiveTvScreen(),
           settings: settings,
         );
 
       case channelCategories:
         return MaterialPageRoute(
-          builder: (_) => const ChannelCategoriesScreen(),
+          builder: (_) => const ChannelCategoriesEntry(),
           settings: settings,
         );
 
@@ -166,13 +178,13 @@ class AppRoutes {
 
       case editProfile:
         return MaterialPageRoute(
-          builder: (_) => const EditProfileScreen(),
+          builder: (_) => const EditProfileEntry(),
           settings: settings,
         );
 
       case helpSupport:
         return MaterialPageRoute(
-          builder: (_) => const HelpSupportScreen(),
+          builder: (_) => const HelpSupportEntry(),
           settings: settings,
         );
 
@@ -251,6 +263,7 @@ class AppRoutes {
         inbox,
         chat,
         liveTv,
+        tvLiveTv,
         channelCategories,
         movieDetails,
         seriesDetails,

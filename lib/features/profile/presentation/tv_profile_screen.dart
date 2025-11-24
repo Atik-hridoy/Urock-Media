@@ -10,21 +10,21 @@ class TvProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ResponsiveScale.init(context);
-    final double maxWidth = ResponsiveScale.maxContentWidth.clamp(960.0, 1280.0);
+    final double maxWidth = ResponsiveScale.maxContentWidth.clamp(800.0, 1000.0);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.paddingXL,
-            vertical: AppSizes.paddingLG,
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxWidth),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingXL,
+                vertical: AppSizes.paddingLG,
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildTopBar(context),
                   const SizedBox(height: AppSizes.spacingXL),
@@ -63,12 +63,12 @@ class TvProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context) {
-    return Row(
+    return Column(
       children: [
         // Profile Avatar with gradient border
         Container(
-          width: 120,
-          height: 120,
+          width: 80,
+          height: 80,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -81,51 +81,54 @@ class TvProfileScreen extends StatelessWidget {
           ),
           child: const Icon(
             Icons.person,
-            size: 60,
+            size: 40,
             color: Colors.white70,
           ),
         ),
-        const SizedBox(width: AppSizes.spacingXL),
+        const SizedBox(height: AppSizes.spacingMD),
         // Profile Info
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Alexandar Golap',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: Colors.white,
+        Column(
+          children: [
+            Text(
+              'Alexandar Golap',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: ResponsiveScale.fontSize(22),
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSizes.spacingXS),
+            Text(
+              '@Alexandar12',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white70,
+                    fontSize: ResponsiveScale.fontSize(16),
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSizes.spacingMD),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingMD,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.goldLight.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSM),
+                border: Border.all(color: AppColors.goldLight, width: 1),
+              ),
+              child: Text(
+                'Premium Member',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.goldLight,
                       fontWeight: FontWeight.bold,
+                      fontSize: ResponsiveScale.fontSize(12),
                     ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSizes.spacingXS),
-              Text(
-                '@Alexandar12',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white70,
-                    ),
-              ),
-              const SizedBox(height: AppSizes.spacingMD),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.paddingMD,
-                  vertical: AppSizes.paddingSM,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.goldLight.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMD),
-                  border: Border.all(color: AppColors.goldLight),
-                ),
-                child: Text(
-                  'Premium Member',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppColors.goldLight,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
@@ -134,7 +137,7 @@ class TvProfileScreen extends StatelessWidget {
   Widget _buildSubscriptionBanner(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSizes.paddingLG),
+      padding: const EdgeInsets.all(AppSizes.paddingMD),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -147,7 +150,7 @@ class TvProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(AppSizes.paddingMD),
+            padding: const EdgeInsets.all(AppSizes.paddingSM),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.2),
               shape: BoxShape.circle,
@@ -155,26 +158,28 @@ class TvProfileScreen extends StatelessWidget {
             child: const Icon(
               Icons.workspace_premium,
               color: Colors.white,
-              size: 32,
+              size: 24,
             ),
           ),
-          const SizedBox(width: AppSizes.spacingLG),
+          const SizedBox(width: AppSizes.spacingMD),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Upgrade to Premium',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontSize: ResponsiveScale.fontSize(16),
                       ),
                 ),
-                const SizedBox(height: AppSizes.spacingXS),
+                const SizedBox(height: 2),
                 Text(
-                  'Unlimited movies, series & exclusive content',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  'Unlimited movies & exclusive content',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.black87,
+                        fontSize: ResponsiveScale.fontSize(12),
                       ),
                 ),
               ],
@@ -183,7 +188,7 @@ class TvProfileScreen extends StatelessWidget {
           const Icon(
             Icons.chevron_right,
             color: Colors.black,
-            size: 28,
+            size: 20,
           ),
         ],
       ),
@@ -207,9 +212,9 @@ class TvProfileScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
-        mainAxisSpacing: AppSizes.spacingLG,
-        crossAxisSpacing: AppSizes.spacingLG,
-        childAspectRatio: 1,
+        mainAxisSpacing: AppSizes.spacingMD,
+        crossAxisSpacing: AppSizes.spacingMD,
+        childAspectRatio: 1.2,
       ),
       itemCount: menuItems.length,
       itemBuilder: (context, index) {
@@ -226,7 +231,7 @@ class TvProfileScreen extends StatelessWidget {
             }
           },
           child: Container(
-            padding: const EdgeInsets.all(AppSizes.paddingMD),
+            padding: const EdgeInsets.all(AppSizes.paddingSM),
             decoration: BoxDecoration(
               color: isDestructive 
                   ? Colors.red.withOpacity(0.1)
@@ -243,19 +248,20 @@ class TvProfileScreen extends StatelessWidget {
               children: [
                 Icon(
                   item['icon'] as IconData,
-                  size: 32,
+                  size: 24,
                   color: isDestructive 
                       ? Colors.red
                       : AppColors.goldLight,
                 ),
-                const SizedBox(height: AppSizes.spacingSM),
+                const SizedBox(height: 4),
                 Text(
                   item['title'] as String,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: isDestructive 
                             ? Colors.red
                             : Colors.white,
                         fontWeight: FontWeight.w600,
+                        fontSize: ResponsiveScale.fontSize(12),
                       ),
                   textAlign: TextAlign.center,
                   maxLines: 2,

@@ -143,7 +143,7 @@ class SeriesDetailsScreen extends StatelessWidget {
         ),
         const SizedBox(height: AppSizes.spacingSM),
         DropdownButtonFormField<String>(
-          value: selectedSeason,
+          initialValue: selectedSeason,
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.surface,

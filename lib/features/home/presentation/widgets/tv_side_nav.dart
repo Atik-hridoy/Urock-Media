@@ -39,9 +39,14 @@ class _HomeTvSideNavState extends State<HomeTvSideNav> {
               selected: _selectedIndex == i,
               onTap: () {
                 setState(() => _selectedIndex = i);
-                // Navigate to profile if profile item is selected
-                if (i == 5) { // Profile is at index 5
-                  Navigator.of(context).pushNamed(AppRoutes.profile);
+                // Handle navigation based on selected item
+                switch (i) {
+                  case 3: // Live TV is at index 3
+                    Navigator.of(context).pushNamed(AppRoutes.liveTv);
+                    break;
+                  case 5: // Profile is at index 5
+                    Navigator.of(context).pushNamed(AppRoutes.profile);
+                    break;
                 }
               },
             ),

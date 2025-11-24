@@ -38,8 +38,8 @@ class TermsCheckbox extends StatelessWidget {
             value: value,
             onChanged: (val) => onChanged(val ?? false),
             side: BorderSide(color: Colors.white.withOpacity(0.3)),
-            fillColor: MaterialStateProperty.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
+            fillColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
                 return AppColors.goldDark;
               }
               return Colors.transparent;
