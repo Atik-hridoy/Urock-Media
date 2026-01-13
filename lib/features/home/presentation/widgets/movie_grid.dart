@@ -27,7 +27,7 @@ class MovieGrid extends StatelessWidget {
             itemCount: movies.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.only(right: AppSizes.spacingMD),
+                padding: const EdgeInsets.only(right: AppSizes.spacingLG),
                 child: MovieCard(movie: movies[index]),
               );
             },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Bottom navigation bar widget
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onTap;
 
@@ -11,6 +11,21 @@ class BottomNavBar extends StatelessWidget {
     required this.selectedIndex,
     required this.onTap,
   });
+
+  @override
+  State<BottomNavBar> createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +40,8 @@ class BottomNavBar extends StatelessWidget {
         ),
       ),
       child: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: onTap,
+        currentIndex: widget.selectedIndex,
+        onTap: widget.onTap,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,
         selectedItemColor: AppColors.goldLight,

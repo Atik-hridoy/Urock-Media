@@ -85,8 +85,8 @@ class _SideNavButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOut,
-          width: 56,
-          height: 56,
+          width: 74,
+          height: 74,
           decoration: BoxDecoration(
             color: selected ? AppColors.goldDark.withOpacity(0.2) : Colors.transparent,
             borderRadius: BorderRadius.circular(AppSizes.radiusLG),
@@ -99,6 +99,7 @@ class _SideNavButton extends StatelessWidget {
           child: Icon(
             item.icon,
             color: selected ? AppColors.goldLight : Colors.white70,
+            size: 32,
           ),
         ),
       ),

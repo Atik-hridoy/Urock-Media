@@ -172,7 +172,7 @@ class ResponsiveScale {
       case DeviceType.desktop:
         return math.min(_screenWidth, 1200);
       case DeviceType.tv:
-        return math.min(_screenWidth, 1600);
+        return _screenWidth * 0.9; // Use 90% of screen width for flexible layout
     }
   }
 

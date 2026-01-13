@@ -35,9 +35,7 @@ class SeriesDetailsScreen extends StatelessWidget {
                   const SizedBox(height: AppSizes.spacingLG),
                   _buildTitleSection(context),
                   const SizedBox(height: AppSizes.spacingMD),
-                  _buildSeasonSelector(context),
-                  const SizedBox(height: AppSizes.spacingMD),
-                  _buildQuickActions(context),
+                  _buildSeasonAndActions(context),
                   const SizedBox(height: AppSizes.spacingXL),
                   _buildOverview(context),
                   const SizedBox(height: AppSizes.spacingXL),
@@ -127,7 +125,7 @@ class SeriesDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSeasonSelector(BuildContext context) {
+  Widget _buildSeasonAndActions(BuildContext context) {
     final seasons = List.generate(5, (i) => 'Season ${i + 1}');
     String selectedSeason = 'Season 1';
 
@@ -142,76 +140,78 @@ class SeriesDetailsScreen extends StatelessWidget {
               ),
         ),
         const SizedBox(height: AppSizes.spacingSM),
-        DropdownButtonFormField<String>(
-          initialValue: selectedSeason,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: AppColors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMD),
-              borderSide: BorderSide(color: AppColors.goldLight.withOpacity(0.3)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMD),
-              borderSide: BorderSide(color: AppColors.goldLight.withOpacity(0.3)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMD),
-              borderSide: const BorderSide(color: AppColors.goldLight),
-            ),
-          ),
-          dropdownColor: AppColors.surface,
-          style: const TextStyle(color: Colors.white),
-          items: seasons.map((season) {
-            return DropdownMenuItem<String>(
-              value: season,
-              child: Text(
-                season,
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                initialValue: selectedSeason,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                    borderSide: BorderSide(color: AppColors.goldLight.withOpacity(0.3)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                    borderSide: BorderSide(color: AppColors.goldLight.withOpacity(0.3)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                    borderSide: const BorderSide(color: AppColors.goldLight),
+                  ),
+                ),
+                dropdownColor: AppColors.surface,
                 style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            // TODO: Handle season selection
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickActions(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Play first episode of selected season
-            },
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('Play'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.goldLight,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingMD),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                items: seasons.map((season) {
+                  return DropdownMenuItem<String>(
+                    value: season,
+                    child: Text(
+                      season,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  // TODO: Handle season selection
+                },
               ),
             ),
-          ),
-        ),
-        const SizedBox(width: AppSizes.spacingMD),
-        IconButton(
-          onPressed: () {
-            // TODO: Add to watchlist
-          },
-          icon: const Icon(Icons.add, color: Colors.white),
-          style: IconButton.styleFrom(
-            backgroundColor: AppColors.surface,
-            padding: const EdgeInsets.all(AppSizes.paddingMD),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+            const SizedBox(width: AppSizes.spacingMD),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: Play first episode of selected season
+                },
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Play'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.goldLight,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingMD),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                  ),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: AppSizes.spacingMD),
+            IconButton(
+              onPressed: () {
+                // TODO: Add to watchlist
+              },
+              icon: const Icon(Icons.add, color: Colors.white),
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.surface,
+                padding: const EdgeInsets.all(AppSizes.paddingMD),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMD),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

@@ -16,18 +16,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final HomeController _controller = HomeController();
   late TabController _tabController;
+  late ScrollController _scrollController;
   int _selectedNavIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _scrollController = ScrollController();
     _controller.loadMovies();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -71,9 +74,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           return TabBarView(
             controller: _tabController,
             children: [
-              _buildHomeTab(),
-              _buildMoviesTab(),
-              _buildSeriesTab(),
+              _buildHomeTab(_scrollController),
+              _buildMoviesTab(_scrollController),
+              _buildSeriesTab(_scrollController),
             ],
           );
         },
@@ -99,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         controller: _tabController,
         isScrollable: true,
         indicatorColor: AppColors.goldLight,
+        dividerColor: Colors.transparent,
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white.withValues(alpha:0.6),
         labelStyle: const TextStyle(
@@ -132,8 +136,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildHomeTab() {
+  Widget _buildHomeTab(ScrollController scrollController) {
     return SingleChildScrollView(
+      controller: scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -164,8 +169,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildMoviesTab() {
+  Widget _buildMoviesTab(ScrollController scrollController) {
     return SingleChildScrollView(
+      controller: scrollController,
       child: Column(
         children: [
           const SizedBox(height: 16),
@@ -190,8 +196,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildSeriesTab() {
+  Widget _buildSeriesTab(ScrollController scrollController) {
     return SingleChildScrollView(
+      controller: scrollController,
       child: Column(
         children: [
           const SizedBox(height: 16),

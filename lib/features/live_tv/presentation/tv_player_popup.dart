@@ -278,7 +278,7 @@ class _TvPlayerPopupState extends State<TvPlayerPopup> {
           const SizedBox(width: AppSizes.spacingLG),
           // Volume Control
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: ResponsiveScale.height(40),
               child: Row(
                 children: [

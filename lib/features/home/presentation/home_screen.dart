@@ -101,25 +101,28 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const HomeTvSideNav(),
               Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _controller.refresh,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: maxContentWidth),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: AppSizes.spacingLG),
-                            _buildTvTabs(context),
-                            const SizedBox(height: AppSizes.spacingLG),
-                            ..._buildTvTabContent(),
-                          ],
+                child: Padding(
+                  padding: const EdgeInsets.only(left: AppSizes.spacingLG),
+                  child: RefreshIndicator(
+                      onRefresh: _controller.refresh,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: maxContentWidth),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: AppSizes.spacingMD),
+                                _buildTvTabs(context),
+                                const SizedBox(height: AppSizes.spacingMD),
+                                ..._buildTvTabContent(),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ),
               ),
             ],
