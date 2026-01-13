@@ -198,13 +198,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildSignUpButton() {
-    return PrimaryButton(
-      text: 'Create Account',
-      onPressed: () async {
-        final success = await _controller.signUp();
-        if (success && mounted) {
-          _controller.navigateToOtp(context);
+    return StatefulBuilder(
+      builder: (context, setState) {
+        if (_controller.isLoading) {
+          return Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+          );
         }
+
+        return PrimaryButton(
+          text: 'Create Account',
+          onPressed: () async {
+            setState(() {});
+            final success = await _controller.signUp();
+            if (mounted) {
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Sign up successful!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                _controller.navigateToHome(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Sign up failed. Please try again.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+              setState(() {});
+            }
+          },
+        );
       },
     );
   }

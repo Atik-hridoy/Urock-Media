@@ -1,4 +1,6 @@
 import '../../../core/utils/logger.dart';
+import '../../../core/services/storage_service.dart';
+import '../../../core/utils/app_logger.dart';
 
 /// Controller for splash screen logic
 class SplashController {
@@ -7,10 +9,10 @@ class SplashController {
     Logger.info('Initializing app...');
     
     try {
-      // TODO: Add initialization logic here
-      // - Check for updates
-      // - Load cached data
-      // - Initialize services
+      // Check if storage is initialized
+      if (!StorageService.isInitialized) {
+        AppLogger.warning('Storage not initialized - Auto-login disabled');
+      }
       
       await Future.delayed(const Duration(seconds: 2));
       Logger.info('App initialized successfully');
@@ -22,13 +24,30 @@ class SplashController {
 
   /// Check if user is authenticated
   Future<bool> isAuthenticated() async {
-    // TODO: Implement authentication check
-    return false;
+    final isLoggedIn = StorageService.isLoggedIn();
+    
+    if (isLoggedIn) {
+      final token = StorageService.getToken();
+      AppLogger.success('User is authenticated', data: {
+        'token_length': token?.length,
+      });
+    } else {
+      AppLogger.info('User is not authenticated');
+    }
+    
+    return isLoggedIn;
   }
 
   /// Get initial route based on app state
-  String getInitialRoute() {
-    // TODO: Implement logic to determine initial route
-    return '/home';
+  Future<String> getInitialRoute() async {
+    final isAuth = await isAuthenticated();
+    
+    if (isAuth) {
+      AppLogger.info('Navigating to home - User is logged in');
+      return '/home';
+    } else {
+      AppLogger.info('Navigating to onboarding - User not logged in');
+      return '/onboarding';
+    }
   }
 }

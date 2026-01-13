@@ -24,6 +24,13 @@ class _SignInScreenState extends State<SignInScreen> {
   void initState() {
     super.initState();
     _controller = SignInController();
+    
+    // Check if user is already logged in (only if storage is initialized)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _controller.isLoggedIn()) {
+        _controller.navigateToHome(context);
+      }
+    });
   }
 
   @override
@@ -126,7 +133,7 @@ class _SignInScreenState extends State<SignInScreen> {
               _controller.obscurePassword
                   ? Icons.visibility_off
                   : Icons.visibility,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
             ),
             onPressed: () {
               setState(() {
@@ -140,15 +147,64 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget _buildSignInButton() {
-    return PrimaryButton(
-      text: 'Sign In',
-      onPressed: () async {
-        final success = await _controller.signIn();
-        if (success && mounted) {
-          _controller.navigateToOtp(context);
+    return StatefulBuilder(
+      builder: (context, setState) {
+        if (_controller.isLoading) {
+          // Show loading button
+          return Container(
+            width: double.infinity,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+          );
         }
+
+        return PrimaryButton(
+          text: 'Sign In',
+          onPressed: () {
+            _handleSignIn(setState);
+          },
+        );
       },
     );
+  }
+
+  Future<void> _handleSignIn(StateSetter setState) async {
+    setState(() {}); // Trigger rebuild for loading state
+    final success = await _controller.signIn();
+    if (!mounted) return;
+
+    if (success) {
+      // Navigate to home after successful login
+      _controller.navigateToHome(context);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sign in successful!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Sign in failed. Please check your credentials.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+    setState(() {}); // Trigger rebuild after completion
   }
 
   Widget _buildForgotPasswordButton() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../logic/splash_controller.dart';
 
 /// Splash screen displayed on app launch
 class SplashScreen extends StatefulWidget {
@@ -15,12 +16,13 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  final SplashController _controller = SplashController();
 
   @override
   void initState() {
     super.initState();
     _setupAnimations();
-    _navigateToHome();
+    _initializeAndNavigate();
   }
 
   void _setupAnimations() {
@@ -46,10 +48,20 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
   }
 
-  Future<void> _navigateToHome() async {
+  Future<void> _initializeAndNavigate() async {
+    // Initialize app
+    await _controller.initialize();
+    
+    // Wait for animation to complete
     await Future.delayed(const Duration(seconds: 3));
+    
+    if (!mounted) return;
+    
+    // Get initial route based on authentication status
+    final route = await _controller.getInitialRoute();
+    
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      Navigator.of(context).pushReplacementNamed(route);
     }
   }
 
