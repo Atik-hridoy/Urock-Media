@@ -14,6 +14,7 @@ class Movie {
   final String? originalTitle;
   final double? popularity;
   final bool? video;
+  final String? trailerPath; // Added for trailer video
 
   Movie({
     required this.id,
@@ -30,27 +31,58 @@ class Movie {
     this.originalTitle,
     this.popularity,
     this.video,
+    this.trailerPath, // Added
   });
 
   /// Create Movie from JSON
   factory Movie.fromJson(Map<String, dynamic> json) {
+    // Handle both TMDB format and custom backend format
     return Movie(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      overview: json['overview'] as String?,
-      posterPath: json['poster_path'] as String?,
-      backdropPath: json['backdrop_path'] as String?,
-      voteAverage: (json['vote_average'] as num?)?.toDouble(),
-      voteCount: json['vote_count'] as int?,
-      releaseDate: json['release_date'] as String?,
+      // ID: Handle both 'id' and '_id'
+      id: json['id'] as int? ?? 
+          (json['_id'] != null ? json['_id'].hashCode : 0),
+      
+      // Title
+      title: json['title'] as String? ?? 'Unknown',
+      
+      // Overview/Description
+      overview: json['overview'] as String? ?? 
+                json['description'] as String?,
+      
+      // Poster: Handle both 'poster_path' and 'thumbnail'
+      posterPath: json['poster_path'] as String? ?? 
+                  json['thumbnail'] as String?,
+      
+      // Backdrop
+      backdropPath: json['backdrop_path'] as String? ?? 
+                    json['movie'] as String?,
+      
+      // Rating: Handle both 'vote_average' and custom rating
+      voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 
+                   (json['rating'] as num?)?.toDouble(),
+      
+      // Vote count: Handle both 'vote_count' and 'views'
+      voteCount: json['vote_count'] as int? ?? 
+                 json['views'] as int?,
+      
+      // Release date: Handle both 'release_date' and 'releaseYear'
+      releaseDate: json['release_date'] as String? ?? 
+                   json['releaseYear'] as String?,
+      
+      // Genre IDs
       genreIds: (json['genre_ids'] as List<dynamic>?)
           ?.map((e) => e as int)
           .toList(),
+      
       adult: json['adult'] as bool?,
       originalLanguage: json['original_language'] as String?,
       originalTitle: json['original_title'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       video: json['video'] as bool?,
+      
+      // Trailer: Handle both 'trailer_path' and 'trailer'
+      trailerPath: json['trailer_path'] as String? ?? 
+                   json['trailer'] as String?,
     );
   }
 
@@ -71,21 +103,65 @@ class Movie {
       'original_title': originalTitle,
       'popularity': popularity,
       'video': video,
+      'trailer': trailerPath,
     };
   }
 
   /// Get full poster URL (uses centralized URL constants)
   String? get fullPosterPath {
     if (posterPath == null) return null;
-    // TODO: Import and use ExternalUrls.getPosterUrl(posterPath) when API is connected
+    
+    // If already a full URL, return as is
+    if (posterPath!.startsWith('http')) {
+      return posterPath;
+    }
+    
+    // If it's a relative path from your backend (starts with /)
+    if (posterPath!.startsWith('/')) {
+      // Use your backend base URL
+      return 'http://10.10.7.41:5001$posterPath';
+    }
+    
+    // Otherwise assume it's TMDB format
     return 'https://image.tmdb.org/t/p/w500$posterPath';
   }
 
   /// Get full backdrop URL (uses centralized URL constants)
   String? get fullBackdropPath {
     if (backdropPath == null) return null;
-    // TODO: Import and use ExternalUrls.getBackdropUrl(backdropPath) when API is connected
+    
+    // If already a full URL, return as is
+    if (backdropPath!.startsWith('http')) {
+      return backdropPath;
+    }
+    
+    // If it's a relative path from your backend (starts with /)
+    if (backdropPath!.startsWith('/')) {
+      // Use your backend base URL
+      return 'http://10.10.7.41:5001$backdropPath';
+    }
+    
+    // Otherwise assume it's TMDB format
     return 'https://image.tmdb.org/t/p/original$backdropPath';
+  }
+
+  /// Get full trailer URL
+  String? get fullTrailerPath {
+    if (trailerPath == null) return null;
+    
+    // If already a full URL, return as is
+    if (trailerPath!.startsWith('http')) {
+      return trailerPath;
+    }
+    
+    // If it's a relative path from your backend (starts with /)
+    if (trailerPath!.startsWith('/')) {
+      // Use your backend base URL
+      return 'http://10.10.7.41:5001$trailerPath';
+    }
+    
+    // Otherwise return as is
+    return trailerPath;
   }
 
   /// Get formatted rating
@@ -116,6 +192,7 @@ class Movie {
     String? originalTitle,
     double? popularity,
     bool? video,
+    String? trailerPath,
   }) {
     return Movie(
       id: id ?? this.id,
@@ -132,6 +209,7 @@ class Movie {
       originalTitle: originalTitle ?? this.originalTitle,
       popularity: popularity ?? this.popularity,
       video: video ?? this.video,
+      trailerPath: trailerPath ?? this.trailerPath,
     );
   }
 }

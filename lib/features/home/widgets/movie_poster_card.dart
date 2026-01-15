@@ -14,8 +14,12 @@ class MoviePosterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = movie.fullPosterPath;
+    
     return GestureDetector(
       onTap: () {
+        debugPrint('🎬 Card tapped - Movie: ${movie.title}, ID: ${movie.id}');
+        
         if (isSeries) {
           Navigator.of(context).pushNamed('/series-details', arguments: movie);
         } else {
@@ -32,26 +36,45 @@ class MoviePosterCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Stack(
             children: [
-              // Placeholder for movie poster
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.grey[800]!,
-                      Colors.grey[900]!,
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.movie,
-                    size: 40,
-                    color: Colors.white.withOpacity(0.3),
-                  ),
-                ),
-              ),
+              // Movie poster image
+              if (imageUrl != null)
+                Image.network(
+                  imageUrl,
+                  width: 120,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.grey[800]!,
+                            Colors.grey[900]!,
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    debugPrint('❌ Failed to load image: $imageUrl');
+                    debugPrint('   Error: $error');
+                    return _buildPlaceholder();
+                  },
+                )
+              else
+                _buildPlaceholder(),
+              
               // Title overlay at bottom
               Positioned(
                 bottom: 0,
@@ -65,7 +88,7 @@ class MoviePosterCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -83,6 +106,28 @@ class MoviePosterCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.grey[800]!,
+            Colors.grey[900]!,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.movie,
+          size: 40,
+          color: Colors.white.withValues(alpha: 0.3),
         ),
       ),
     );

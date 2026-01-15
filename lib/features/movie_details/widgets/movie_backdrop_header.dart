@@ -9,6 +9,7 @@ class MovieBackdropHeader extends StatefulWidget {
   final String year;
   final String ageRating;
   final String duration;
+  final String? trailerUrl; // Added trailer URL
 
   const MovieBackdropHeader({
     super.key,
@@ -17,6 +18,7 @@ class MovieBackdropHeader extends StatefulWidget {
     required this.year,
     required this.ageRating,
     required this.duration,
+    this.trailerUrl, // Added
   });
 
   @override
@@ -30,16 +32,30 @@ class _MovieBackdropHeaderState extends State<MovieBackdropHeader> {
   @override
   void initState() {
     super.initState();
-    // Using a sample video from the internet
+    _initializeVideo();
+  }
+
+  void _initializeVideo() {
+    final videoUrl = widget.trailerUrl;
+    
+    if (videoUrl == null || videoUrl.isEmpty) {
+      debugPrint('⚠️ No trailer URL provided');
+      return;
+    }
+    
+    debugPrint('🎬 Initializing trailer video: $videoUrl');
+    
     _videoController = VideoPlayerController.networkUrl(
-      Uri.parse('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'),
+      Uri.parse(videoUrl),
     )..initialize().then((_) {
         if (mounted) {
           setState(() {
             _isInitialized = true;
           });
+          debugPrint('✅ Trailer video initialized successfully');
         }
       }).catchError((error) {
+        debugPrint('❌ Failed to initialize trailer: $error');
         if (mounted) {
           setState(() {
             _isInitialized = false;

@@ -38,15 +38,22 @@ class ResponsiveScale {
     _scaleFactor = math.min(_scaleWidth, _scaleHeight);
     
     // Determine device type
-    _deviceType = _getDeviceType(_screenWidth);
+    _deviceType = _getDeviceType(_screenWidth, _screenHeight);
   }
 
-  /// Get device type based on width
-  static DeviceType _getDeviceType(double width) {
+  /// Get device type based on width and height
+  static DeviceType _getDeviceType(double width, double height) {
     if (width < mobileMax) return DeviceType.mobile;
+    
+    // Check for TV/Desktop: landscape orientation with width >= 800
+    // This catches Android TV emulators that report scaled dimensions
+    final isLandscape = width > height;
+    if (isLandscape && width >= 800) return DeviceType.tv;
+    
     if (width < tabletMax) return DeviceType.tablet;
-    if (width < desktopMax) return DeviceType.desktop;
-    return DeviceType.tv;
+    
+    // Desktop or TV for larger screens
+    return DeviceType.desktop;
   }
 
   // ==================== GETTERS ====================

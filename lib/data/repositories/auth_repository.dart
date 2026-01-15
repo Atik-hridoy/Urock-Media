@@ -29,8 +29,24 @@ class AuthRepository {
       final authResponse = AuthResponseModel.fromJson(response.data);
 
       if (authResponse.success && authResponse.token != null) {
+        AppLogger.info('Saving token to storage...', data: {
+          'token_length': authResponse.token!.length,
+        });
+        
         // Save token to local storage
-        await StorageService.saveToken(authResponse.token!);
+        final tokenSaved = await StorageService.saveToken(authResponse.token!);
+        
+        AppLogger.info('Token save result', data: {
+          'saved': tokenSaved,
+          'storage_initialized': StorageService.isInitialized,
+        });
+
+        // Verify token was saved
+        final savedToken = StorageService.getToken();
+        AppLogger.info('Token verification', data: {
+          'token_exists': savedToken != null,
+          'token_matches': savedToken == authResponse.token,
+        });
 
         // Save user data if available
         if (authResponse.user != null) {
@@ -39,7 +55,12 @@ class AuthRepository {
 
         AppLogger.success('Login successful', data: {
           'email': email,
-          'token_saved': true,
+          'token_saved': tokenSaved,
+        });
+      } else {
+        AppLogger.warning('Login response missing token', data: {
+          'success': authResponse.success,
+          'has_token': authResponse.token != null,
         });
       }
 

@@ -170,6 +170,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildMoviesTab(ScrollController scrollController) {
+    // Debug: Check if popular movies data exists
+    debugPrint('🎬 Movies Tab - Popular Movies Count: ${_controller.popularMovies.length}');
+    if (_controller.popularMovies.isNotEmpty) {
+      debugPrint('🎬 First Popular Movie: ${_controller.popularMovies.first.title}');
+    } else {
+      debugPrint('⚠️ Popular Movies list is EMPTY!');
+    }
+    
     return SingleChildScrollView(
       controller: scrollController,
       child: Column(
@@ -179,6 +187,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             movie: _controller.featuredMovies.isNotEmpty 
                 ? _controller.featuredMovies.first 
                 : null,
+          ),
+          const SizedBox(height: 24),
+          // Popular Movies Section
+          Builder(
+            builder: (context) {
+              debugPrint('🎬 Building Popular Movies Section with ${_controller.popularMovies.length} movies');
+              return MovieSection(
+                title: 'Popular Movies',
+                movies: _controller.popularMovies,
+              );
+            },
           ),
           const SizedBox(height: 24),
           MovieSection(

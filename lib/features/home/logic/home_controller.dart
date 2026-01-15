@@ -58,7 +58,9 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _loadPopularMovies() async {
+    Logger.info('Loading popular movies from API...');
     _popularMovies = await _movieService.getPopularMovies();
+    Logger.info('Popular movies loaded: ${_popularMovies.length} movies');
   }
 
   Future<void> _loadTopRatedMovies() async {

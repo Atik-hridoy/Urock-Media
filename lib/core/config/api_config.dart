@@ -29,9 +29,9 @@ class ApiConfig {
   }
 
   // Image Base URLs
-  static const String _devImageUrl = 'https://dev-cdn.example.com/images';
-  static const String _stagingImageUrl = 'https://staging-cdn.example.com/images';
-  static const String _productionImageUrl = 'https://cdn.example.com/images';
+  static const String _devImageUrl = 'http://10.10.7.41:5001/';
+  static const String _stagingImageUrl = 'http://10.10.7.41:5001/';
+  static const String _productionImageUrl = 'http://10.10.7.41:5001/';
 
   /// Get image base URL based on environment
   static String get imageBaseUrl {

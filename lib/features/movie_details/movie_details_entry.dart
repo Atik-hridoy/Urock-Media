@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../../core/constants/app_sizes.dart';
 import '../home/data/movie_model.dart';
 import 'presentation/details_screen.dart' as legacy_details;
@@ -12,7 +13,10 @@ class MovieDetailsEntry extends StatelessWidget {
 
   bool _isTvLayout(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return width >= AppSizes.desktopBreakpoint;
+    // Check if running on Android TV
+    final isAndroidTV = defaultTargetPlatform == TargetPlatform.android && 
+                        width >= 1000;
+    return width >= AppSizes.desktopBreakpoint || isAndroidTV;
   }
 
   @override

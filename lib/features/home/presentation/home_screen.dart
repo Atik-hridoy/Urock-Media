@@ -61,6 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ? ResponsiveScale.maxContentWidth
         : MediaQuery.of(context).size.width;
 
+    // Debug logging
+    debugPrint('📺 TV Home - Width: ${ResponsiveScale.screenWidth}, Height: ${ResponsiveScale.screenHeight}');
+    debugPrint('📺 TV Home - DeviceType: ${ResponsiveScale.deviceType}, isTvLikeLayout: $isTvLikeLayout');
+    debugPrint('📺 TV Home - isTV: ${ResponsiveScale.isTV}, isDesktop: ${ResponsiveScale.isDesktop}');
+
     return Scaffold(
       appBar: isTvLikeLayout
           ? null

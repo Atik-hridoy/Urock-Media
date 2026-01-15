@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:math';
 
 /// Local Storage Service
 /// Handles all local storage operations using SharedPreferences
@@ -10,10 +11,25 @@ class StorageService {
   static Future<void> init() async {
     try {
       _prefs = await SharedPreferences.getInstance();
+      print('✅ SharedPreferences initialized successfully');
+      
+      // Test write/read to verify it's working
+      final testKey = 'test_storage_${DateTime.now().millisecondsSinceEpoch}';
+      final testValue = 'test_value';
+      final writeSuccess = await _prefs!.setString(testKey, testValue);
+      final readValue = _prefs!.getString(testKey);
+      
+      print('📝 Storage Test - Write: $writeSuccess, Read: ${readValue == testValue}');
+      
+      if (writeSuccess && readValue == testValue) {
+        print('✅ Storage is working correctly');
+        await _prefs!.remove(testKey); // Clean up test
+      } else {
+        print('⚠️ Storage test failed - persistence may not work');
+      }
     } catch (e) {
       // If SharedPreferences fails to initialize, log the error but don't crash
-      // The app will work without persistent storage (no auto-login)
-      print('Warning: SharedPreferences failed to initialize: $e');
+      print('❌ SharedPreferences failed to initialize: $e');
       print('App will continue without persistent storage');
       _prefs = null;
     }
@@ -33,8 +49,32 @@ class StorageService {
 
   /// Save authentication token
   static Future<bool> saveToken(String token) async {
-    if (_prefs == null) return false;
-    return await _prefs!.setString('auth_token', token);
+    if (_prefs == null) {
+      print('❌ Cannot save token - SharedPreferences not initialized');
+      return false;
+    }
+    
+    print('💾 Attempting to save token...');
+    print('   Token length: ${token.length}');
+    print('   Token preview: ${token.substring(0, min(20, token.length))}...');
+    
+    final success = await _prefs!.setString('auth_token', token);
+    
+    if (success) {
+      print('✅ Token saved successfully');
+      
+      // Verify it was saved
+      final savedToken = _prefs!.getString('auth_token');
+      if (savedToken == token) {
+        print('✅ Token verified - matches saved value');
+      } else {
+        print('⚠️ Token verification failed - saved value does not match');
+      }
+    } else {
+      print('❌ Failed to save token');
+    }
+    
+    return success;
   }
 
   /// Get authentication token
