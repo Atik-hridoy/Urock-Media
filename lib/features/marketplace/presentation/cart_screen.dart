@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/cart_item_card.dart';
 
@@ -11,6 +13,17 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  final _controller = Get.isRegistered<MarketplaceController>()
+      ? Get.find<MarketplaceController>()
+      : Get.put(MarketplaceController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller.fetchCart();
+  }
+
   final List<Map<String, dynamic>> cartItems = [
     {
       'name': 'Hiking Traveler Backpack',
@@ -36,7 +49,10 @@ class _CartScreenState extends State<CartScreen> {
   ];
 
   double get totalPrice {
-    return cartItems.fold(0, (sum, item) => sum + (item['price'] * item['quantity']));
+    return cartItems.fold(
+      0,
+      (sum, item) => sum + (item['price'] * item['quantity']),
+    );
   }
 
   @override
@@ -60,64 +76,75 @@ class _CartScreenState extends State<CartScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) {
-                return CartItemCard(
-                  name: cartItems[index]['name'],
-                  size: cartItems[index]['size'],
-                  color: cartItems[index]['color'],
-                  price: cartItems[index]['price'],
-                  quantity: cartItems[index]['quantity'],
-                  onQuantityChanged: (newQuantity) {
-                    setState(() {
-                      cartItems[index]['quantity'] = newQuantity;
-                    });
-                  },
-                  onRemove: () {
-                    setState(() {
-                      cartItems.removeAt(index);
-                    });
-                  },
-                );
-              },
+      body: Obx(() {
+        if (_controller.isLoading.value) {
+          return Center(child: CircularProgressIndicator.adaptive());
+        }
+        final cart = _controller.cartItem.value;
+
+        if (cart == null || cart.products.isEmpty) {
+          return const Center(child: Text("No item found"));
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: cart.products.length,
+                itemBuilder: (context, index) {
+                  final item = cart.products[index];
+                  return CartItemCard(
+                    name: item.productName,
+                    size: item.selectedAttributes['Size'] ?? "N/A",
+                    color: item.selectedAttributes['Color'],
+                    price: item.price,
+                    quantity: item.quantity,
+                    onQuantityChanged: (newQuantity) {
+                      setState(() {
+                        cartItems[index]['quantity'] = newQuantity;
+                      });
+                    },
+                    onRemove: () {
+                      setState(() {
+                        cartItems.removeAt(index);
+                      });
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          // Checkout Button
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/checkout');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldLight,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            // Checkout Button
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: SafeArea(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/checkout');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.goldLight,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Checkout : \$${totalPrice.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    child: Text(
+                      'Checkout : \$${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

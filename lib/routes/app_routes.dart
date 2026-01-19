@@ -61,7 +61,7 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Check if route should be redirected to TV version
     String routeName = settings.name ?? splash;
-    
+
     // TV detection will be handled at the widget level for better context access
     switch (routeName) {
       case splash:
@@ -212,11 +212,11 @@ class AppRoutes {
           settings: settings,
         );
 
-      case productDetails:
-        return MaterialPageRoute(
-          builder: (_) => const ProductDetailsScreen(),
-          settings: settings,
-        );
+      // case productDetails:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const ProductDetailsScreen(),
+      //     settings: settings,
+      //   );
 
       case cart:
         return MaterialPageRoute(
@@ -252,30 +252,30 @@ class AppRoutes {
 
   /// Get all route names
   static List<String> get allRoutes => [
-        splash,
-        onboarding,
-        auth,
-        signup,
-        otp,
-        interest,
-        home,
-        search,
-        inbox,
-        chat,
-        liveTv,
-        tvLiveTv,
-        channelCategories,
-        movieDetails,
-        seriesDetails,
-        profile,
-        editProfile,
-        helpSupport,
-        privacyPolicy,
-        faq,
-        changePassword,
-        marketplace,
-        productDetails,
-        cart,
-        checkout,
-      ];
+    splash,
+    onboarding,
+    auth,
+    signup,
+    otp,
+    interest,
+    home,
+    search,
+    inbox,
+    chat,
+    liveTv,
+    tvLiveTv,
+    channelCategories,
+    movieDetails,
+    seriesDetails,
+    profile,
+    editProfile,
+    helpSupport,
+    privacyPolicy,
+    faq,
+    changePassword,
+    marketplace,
+    productDetails,
+    cart,
+    checkout,
+  ];
 }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:urock_media_movie_app/core/utils/logger.dart';
 import '../../core/config/api_endpoints.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/storage_service.dart';
@@ -20,10 +21,7 @@ class AuthRepository {
 
       final response = await _apiService.post(
         ApiEndpoints.login,
-        data: {
-          'email': email,
-          'password': password,
-        },
+        data: {'email': email, 'password': password},
       );
 
       final authResponse = AuthResponseModel.fromJson(response.data);
@@ -37,10 +35,10 @@ class AuthRepository {
           await StorageService.saveUserData(authResponse.user!.toJson());
         }
 
-        AppLogger.success('Login successful', data: {
-          'email': email,
-          'token_saved': true,
-        });
+        AppLogger.success(
+          'Login successful',
+          data: {'email': email, 'token_saved': true},
+        );
       }
 
       return authResponse;
@@ -61,7 +59,11 @@ class AuthRepository {
         message: e.message ?? 'Network error occurred',
       );
     } catch (e, stackTrace) {
-      AppLogger.error('Unexpected login error', error: e, stackTrace: stackTrace);
+      AppLogger.error(
+        'Unexpected login error',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return AuthResponseModel(
         success: false,
         message: 'An unexpected error occurred',
@@ -102,10 +104,10 @@ class AuthRepository {
           await StorageService.saveUserData(authResponse.user!.toJson());
         }
 
-        AppLogger.success('Registration successful', data: {
-          'email': email,
-          'token_saved': true,
-        });
+        AppLogger.success(
+          'Registration successful',
+          data: {'email': email, 'token_saved': true},
+        );
       }
 
       return authResponse;
@@ -125,7 +127,11 @@ class AuthRepository {
         message: e.message ?? 'Network error occurred',
       );
     } catch (e, stackTrace) {
-      AppLogger.error('Unexpected registration error', error: e, stackTrace: stackTrace);
+      AppLogger.error(
+        'Unexpected registration error',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return AuthResponseModel(
         success: false,
         message: 'An unexpected error occurred',
@@ -186,7 +192,10 @@ class AuthRepository {
 
       return AuthResponseModel.fromJson(response.data);
     } on DioException catch (e) {
-      AppLogger.error('Forgot password failed', error: e.response?.data ?? e.message);
+      AppLogger.error(
+        'Forgot password failed',
+        error: e.response?.data ?? e.message,
+      );
 
       if (e.response != null) {
         return AuthResponseModel.fromJson(e.response!.data);
@@ -214,15 +223,15 @@ class AuthRepository {
 
       final response = await _apiService.post(
         ApiEndpoints.resetPassword,
-        data: {
-          'token': token,
-          'password': password,
-        },
+        data: {'token': token, 'password': password},
       );
 
       return AuthResponseModel.fromJson(response.data);
     } on DioException catch (e) {
-      AppLogger.error('Reset password failed', error: e.response?.data ?? e.message);
+      AppLogger.error(
+        'Reset password failed',
+        error: e.response?.data ?? e.message,
+      );
 
       if (e.response != null) {
         return AuthResponseModel.fromJson(e.response!.data);

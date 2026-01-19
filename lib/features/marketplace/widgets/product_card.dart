@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:urock_media_movie_app/features/marketplace/presentation/product_details_screen.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Product card widget for marketplace
 class ProductCard extends StatelessWidget {
   final String name;
   final String price;
+  final String image;
+  final String id;
 
   const ProductCard({
     super.key,
     required this.name,
     required this.price,
+    required this.image,
+    required this.id,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed('/product-details');
+        // Navigator.of(context).pushNamed(
+        //   '/product-details',
+        //   arguments: id,
+        // );
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ProductDetailsScreen(id: id)),
+        );
       },
       child: Container(
         width: 160,
@@ -36,20 +48,20 @@ class ProductCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.grey[700]!,
-                        Colors.grey[900]!,
-                      ],
-                    ),
+                    // gradient: LinearGradient(
+                    //   begin: Alignment.topLeft,
+                    //   end: Alignment.bottomRight,
+                    //   colors: [Colors.grey[700]!, Colors.grey[900]!],
+                    // ),
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.checkroom,
-                      size: 50,
-                      color: Colors.white.withOpacity(0.3),
+                    child: Image.network(
+                      image,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.checkroom,
+                        size: 50,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
                     ),
                   ),
                 ),

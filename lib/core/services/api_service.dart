@@ -88,7 +88,11 @@ class ApiService {
       final response = await dio.get(
         endpoint,
         queryParameters: queryParameters,
-        options: options,
+        options:
+            options ??
+            Options(
+              headers: {"Authorization": "Bearer ${StorageService.getToken()}"},
+            ),
       );
       return response;
     } catch (e) {
@@ -108,7 +112,11 @@ class ApiService {
         endpoint,
         data: data,
         queryParameters: queryParameters,
-        options: options,
+        options:
+            options ??
+            Options(
+              headers: {"Authorization": "Bearer ${StorageService.getToken()}"},
+            ),
       );
       return response;
     } catch (e) {

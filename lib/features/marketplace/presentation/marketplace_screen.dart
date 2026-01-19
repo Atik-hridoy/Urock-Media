@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:urock_media_movie_app/core/config/api_config.dart';
+import 'package:urock_media_movie_app/features/marketplace/data/model/product_model.dart';
+import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../home/widgets/bottom_nav_bar.dart';
 import '../widgets/category_icon.dart';
@@ -21,6 +25,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     {'name': 'Home Appliances', 'icon': Icons.kitchen},
     {'name': 'Clothing', 'icon': Icons.chair},
   ];
+  final _controller = Get.isRegistered<MarketplaceController>()
+      ? Get.find<MarketplaceController>()
+      : Get.put(MarketplaceController());
 
   @override
   Widget build(BuildContext context) {
@@ -134,11 +141,29 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             ),
             const SizedBox(height: 24),
             // Feature Products
-            _buildProductSection('Feature Products'),
+            Obx(
+              () => _buildProductSection(
+                'Feature Products',
+                _controller.products,
+                _controller.isLoading.value,
+              ),
+            ),
             // Popular Products
-            _buildProductSection('Popular Products'),
+            Obx(
+              () => _buildProductSection(
+                'Popular Products',
+                [],
+                _controller.isLoading.value,
+              ),
+            ),
             // Trending Products
-            _buildProductSection('Trending Products'),
+            Obx(
+              () => _buildProductSection(
+                'Trending Products',
+                [],
+                _controller.isLoading.value,
+              ),
+            ),
             const SizedBox(height: 24),
           ],
         ),
@@ -155,7 +180,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     );
   }
 
-  Widget _buildProductSection(String title) {
+  Widget _buildProductSection(
+    String title,
+    List<ProductModel> products,
+    bool isLoading,
+  ) {
+    if (products.isEmpty) {
+      return SizedBox.shrink();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -173,22 +205,29 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         const SizedBox(height: 16),
         SizedBox(
           height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: index < 3 ? 12 : 0,
+          child: isLoading
+              ? Center(
+                  child: CircularProgressIndicator.adaptive(
+                    backgroundColor: AppColors.white,
+                  ),
+                )
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _controller.products.length,
+                  itemBuilder: (context, index) {
+                    final item = _controller.products[index];
+                    return Padding(
+                      padding: EdgeInsets.only(right: index < 3 ? 12 : 0),
+                      child: ProductCard(
+                        id: item.id,
+                        name: item.name,
+                        price: '\$${item.price}',
+                        image: ApiConfig.baseUrl + item.images.first,
+                      ),
+                    );
+                  },
                 ),
-                child: const ProductCard(
-                  name: 'Soft Printed Top',
-                  price: '\$50',
-                ),
-              );
-            },
-          ),
         ),
         const SizedBox(height: 24),
       ],

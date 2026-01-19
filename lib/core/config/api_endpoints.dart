@@ -89,6 +89,11 @@ class ApiEndpoints {
   static const String trackPlay = '/analytics/play';
   static const String trackSearch = '/analytics/search';
 
+  // ==================== MarketPlace ==================
+  static const String products = "/products/";
+  static const String cardAdd = "/cart/add";
+  static const String myCart = "/cart/me";
+
   /// Helper method to replace path parameters
   /// Example: replaceParams('/movies/{id}', {'id': '123'}) => '/movies/123'
   static String replaceParams(String endpoint, Map<String, dynamic> params) {
