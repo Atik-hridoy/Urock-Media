@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/cart_item_card.dart';
@@ -13,9 +13,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final _controller = Get.isRegistered<MarketplaceController>()
-      ? Get.find<MarketplaceController>()
-      : Get.put(MarketplaceController());
+  final _controller = MarketplaceController();
 
   @override
   void initState() {
@@ -24,36 +22,36 @@ class _CartScreenState extends State<CartScreen> {
     _controller.fetchCart();
   }
 
-  final List<Map<String, dynamic>> cartItems = [
-    {
-      'name': 'Hiking Traveler Backpack',
-      'size': 'M',
-      'color': 'Yellow',
-      'price': 149.99,
-      'quantity': 1,
-    },
-    {
-      'name': 'Hiking Traveler Backpack',
-      'size': 'M',
-      'color': 'Yellow',
-      'price': 149.99,
-      'quantity': 1,
-    },
-    {
-      'name': 'Hiking Traveler Backpack',
-      'size': 'M',
-      'color': 'Yellow',
-      'price': 149.99,
-      'quantity': 1,
-    },
-  ];
+  // final List<Map<String, dynamic>> cartItems = [
+  //   {
+  //     'name': 'Hiking Traveler Backpack',
+  //     'size': 'M',
+  //     'color': 'Yellow',
+  //     'price': 149.99,
+  //     'quantity': 1,
+  //   },
+  //   {
+  //     'name': 'Hiking Traveler Backpack',
+  //     'size': 'M',
+  //     'color': 'Yellow',
+  //     'price': 149.99,
+  //     'quantity': 1,
+  //   },
+  //   {
+  //     'name': 'Hiking Traveler Backpack',
+  //     'size': 'M',
+  //     'color': 'Yellow',
+  //     'price': 149.99,
+  //     'quantity': 1,
+  //   },
+  // ];
 
-  double get totalPrice {
-    return cartItems.fold(
-      0,
-      (sum, item) => sum + (item['price'] * item['quantity']),
-    );
-  }
+  // double get totalPrice {
+  //   return cartItems.fold(
+  //     0,
+  //     (sum, item) => sum + (item['price'] * item['quantity']),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -76,75 +74,101 @@ class _CartScreenState extends State<CartScreen> {
         ),
         centerTitle: true,
       ),
-      body: Obx(() {
-        if (_controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator.adaptive());
-        }
-        final cart = _controller.cartItem.value;
-
-        if (cart == null || cart.products.isEmpty) {
-          return const Center(child: Text("No item found"));
-        }
-        return Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: cart.products.length,
-                itemBuilder: (context, index) {
-                  final item = cart.products[index];
-                  return CartItemCard(
-                    name: item.productName,
-                    size: item.selectedAttributes['Size'] ?? "N/A",
-                    color: item.selectedAttributes['Color'],
-                    price: item.price,
-                    quantity: item.quantity,
-                    onQuantityChanged: (newQuantity) {
-                      setState(() {
-                        cartItems[index]['quantity'] = newQuantity;
-                      });
-                    },
-                    onRemove: () {
-                      setState(() {
-                        cartItems.removeAt(index);
-                      });
-                    },
-                  );
-                },
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final cart = _controller.cartItem.value;
+          if (_controller.isLoading.first) {
+            return Center(
+              child: CircularProgressIndicator.adaptive(
+                backgroundColor: AppColors.white,
               ),
-            ),
-            // Checkout Button
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/checkout');
+            );
+          }
+          if (cart == null || cart.products.isEmpty) {
+            return Center(child: Text("No item found"));
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: RefreshIndicator.adaptive(
+                  color: AppColors.white,
+                  onRefresh: () => _controller.onRefreshCart(),
+                  child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: cart.products.length,
+                    itemBuilder: (context, index) {
+                      final item = cart.products[index];
+                      return CartItemCard(
+                        image: ApiConfig.imageUrl + item.productImage,
+                        name: item.productName,
+                        size: item.selectedAttributes['Size'] ?? "",
+                        color: item.selectedAttributes['Color'] ?? "",
+                        price: item.price,
+                        quantity: item.quantity,
+                        isSimpleProduct: item.productType == 'simple',
+                        onQuantityIncrease: () {
+                          setState(() {
+                            item.quantity += 1;
+                          });
+                          _controller.onquantityIncrease(
+                            item.product.id,
+                            item.variantId,
+                          );
+                        },
+                        onQuantityDecrease: () {
+                          setState(() {
+                            item.quantity -= 1;
+                          });
+                          _controller.onQuantityDecrease(
+                            item.product.id,
+                            item.variantId,
+                          );
+                        },
+                        onRemove: () {
+                          cart.products.removeAt(index);
+                          setState(() {});
+                          _controller.onDeleteCart(item.id);
+                        },
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.goldLight,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              // Checkout Button
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: SafeArea(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/checkout');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.goldLight,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Checkout : \$${totalPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      child: Text(
+                        'Checkout : \$${cart.totalAmount.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 }

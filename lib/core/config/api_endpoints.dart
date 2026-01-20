@@ -46,7 +46,8 @@ class ApiEndpoints {
   static const String onTheAirTvShows = '/tv-shows/on-the-air';
   static const String searchTvShows = '/tv-shows/search';
   static const String tvShowSeasons = '/tv-shows/{id}/seasons';
-  static const String tvShowEpisodes = '/tv-shows/{id}/seasons/{seasonNumber}/episodes';
+  static const String tvShowEpisodes =
+      '/tv-shows/{id}/seasons/{seasonNumber}/episodes';
 
   // ==================== Genres ====================
   static const String movieGenres = '/genres/movies';
@@ -93,6 +94,12 @@ class ApiEndpoints {
   static const String products = "/products/";
   static const String cardAdd = "/cart/add";
   static const String myCart = "/cart/me";
+  static const String cartItem = "/cart/item/";
+  static const String category = "/categories/";
+  static const String addBookmark = "/bookmarks";
+
+  // ==================== Inbox ========================
+  static const String chat = "/chats/";
 
   /// Helper method to replace path parameters
   /// Example: replaceParams('/movies/{id}', {'id': '123'}) => '/movies/123'

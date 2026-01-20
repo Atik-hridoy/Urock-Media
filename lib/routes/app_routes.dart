@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/features/marketplace/presentation/category_product_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/auth/views/sign_in_screen.dart';
@@ -56,6 +57,7 @@ class AppRoutes {
   static const String productDetails = '/product-details';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
+  static const String categoryProduct = '/category-product';
 
   /// Generate routes with TV detection
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -212,11 +214,12 @@ class AppRoutes {
           settings: settings,
         );
 
-      // case productDetails:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const ProductDetailsScreen(),
-      //     settings: settings,
-      //   );
+      case productDetails:
+        final id = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => ProductDetailsScreen(id: id),
+          settings: settings,
+        );
 
       case cart:
         return MaterialPageRoute(
@@ -227,6 +230,12 @@ class AppRoutes {
       case checkout:
         return MaterialPageRoute(
           builder: (_) => const CheckoutScreen(),
+          settings: settings,
+        );
+      case categoryProduct:
+        final category = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => CategoryProductScreen(category: category),
           settings: settings,
         );
 
@@ -277,5 +286,6 @@ class AppRoutes {
     productDetails,
     cart,
     checkout,
+    categoryProduct,
   ];
 }

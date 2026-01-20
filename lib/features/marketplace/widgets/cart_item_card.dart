@@ -8,7 +8,10 @@ class CartItemCard extends StatelessWidget {
   final String color;
   final double price;
   final int quantity;
-  final Function(int) onQuantityChanged;
+  final String image;
+  final bool isSimpleProduct;
+  final Function() onQuantityIncrease;
+  final Function() onQuantityDecrease;
   final VoidCallback onRemove;
 
   const CartItemCard({
@@ -18,8 +21,11 @@ class CartItemCard extends StatelessWidget {
     required this.color,
     required this.price,
     required this.quantity,
-    required this.onQuantityChanged,
     required this.onRemove,
+    required this.onQuantityIncrease,
+    required this.onQuantityDecrease,
+    required this.image,
+    required this.isSimpleProduct,
   });
 
   @override
@@ -37,22 +43,24 @@ class CartItemCard extends StatelessWidget {
           Container(
             width: 70,
             height: 70,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.grey[700]!,
-                  Colors.grey[900]!,
-                ],
-              ),
-            ),
+
+            // decoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(8),
+            //   gradient: LinearGradient(
+            //     begin: Alignment.topLeft,
+            //     end: Alignment.bottomRight,
+            //     colors: [Colors.grey[700]!, Colors.grey[900]!],
+            //   ),
+            // ),
             child: Center(
-              child: Icon(
-                Icons.backpack,
-                size: 30,
-                color: Colors.white.withOpacity(0.5),
+              child: Image.network(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  Icons.backpack,
+                  size: 30,
+                  color: Colors.white.withOpacity(0.5),
+                ),
               ),
             ),
           ),
@@ -72,14 +80,16 @@ class CartItemCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Size: $size    Color: $color',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 12,
+                if (!isSimpleProduct) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Size: $size    Color: $color',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 12,
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 8),
                 Text(
                   '\$${price.toStringAsFixed(2)}',
@@ -100,11 +110,7 @@ class CartItemCard extends StatelessWidget {
                 onTap: onRemove,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 20),
                 ),
               ),
               const SizedBox(height: 8),
@@ -115,7 +121,7 @@ class CartItemCard extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       if (quantity > 1) {
-                        onQuantityChanged(quantity - 1);
+                        onQuantityDecrease();
                       }
                     },
                     child: Container(
@@ -146,7 +152,7 @@ class CartItemCard extends StatelessWidget {
                   // Increase Button
                   GestureDetector(
                     onTap: () {
-                      onQuantityChanged(quantity + 1);
+                      onQuantityIncrease();
                     },
                     child: Container(
                       width: 24,

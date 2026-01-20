@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/routes/app_routes.dart';
 
 /// Category icon widget for marketplace
 class CategoryIcon extends StatelessWidget {
   final String name;
-  final IconData icon;
+  final String icon;
 
-  const CategoryIcon({
-    super.key,
-    required this.name,
-    required this.icon,
-  });
+  const CategoryIcon({super.key, required this.name, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Navigate to category products
+        Navigator.of(
+          context,
+        ).pushNamed(AppRoutes.categoryProduct, arguments: name);
       },
       child: Column(
         children: [
@@ -26,10 +25,11 @@ class CategoryIcon extends StatelessWidget {
               color: const Color(0xFF2C2C2C),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
+            child: Image.network(
               icon,
-              color: Colors.white,
-              size: 28,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Icon(Icons.checkroom, color: Colors.white, size: 28),
             ),
           ),
           const SizedBox(height: 8),
@@ -37,10 +37,7 @@ class CategoryIcon extends StatelessWidget {
             width: 70,
             child: Text(
               name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 11),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

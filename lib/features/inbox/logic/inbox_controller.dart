@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
+import 'package:urock_media_movie_app/features/inbox/data/model/chat_model.dart';
 import '../../../core/utils/logger.dart';
 
 /// Controller for inbox screen logic
 class InboxController extends ChangeNotifier {
-  List<Map<String, dynamic>> _messages = [];
+  List<ChatModel> _messages = [];
   bool _isLoading = false;
 
-  List<Map<String, dynamic>> get messages => _messages;
+  List<ChatModel> get messages => _messages;
   bool get isLoading => _isLoading;
 
   /// Load messages
@@ -17,9 +18,7 @@ class InboxController extends ChangeNotifier {
     try {
       Logger.info('Loading messages');
       // TODO: Implement actual API call
-      await Future.delayed(const Duration(seconds: 1));
-      
-      _messages = [];
+
       _isLoading = false;
       notifyListeners();
     } catch (e, stackTrace) {

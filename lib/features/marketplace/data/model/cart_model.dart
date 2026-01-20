@@ -64,7 +64,7 @@ class CartItemModel {
   final CartProductRefModel product;
   final String? variantId;
   final double price;
-  final int quantity;
+  int quantity;
   final String productName;
   final String productImage;
   final String productType; // simple | variable
@@ -72,7 +72,7 @@ class CartItemModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  const CartItemModel({
+  CartItemModel({
     required this.id,
     required this.product,
     required this.variantId,

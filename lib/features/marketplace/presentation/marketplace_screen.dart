@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/product_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
@@ -18,6 +17,10 @@ class MarketplaceScreen extends StatefulWidget {
 
 class _MarketplaceScreenState extends State<MarketplaceScreen> {
   int _selectedNavIndex = 2; // Marketplace is at index 2
+  final _scrollController = List.generate(
+    4,
+    (index) => ScrollController(),
+  ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
   final List<Map<String, dynamic>> categories = [
     {'name': 'Clothing', 'icon': Icons.checkroom},
@@ -25,9 +28,50 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     {'name': 'Home Appliances', 'icon': Icons.kitchen},
     {'name': 'Clothing', 'icon': Icons.chair},
   ];
-  final _controller = Get.isRegistered<MarketplaceController>()
-      ? Get.find<MarketplaceController>()
-      : Get.put(MarketplaceController());
+  final _controller = MarketplaceController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller.fetchCategory();
+    _controller.loadProducts();
+    _controller.loadPopularProducts();
+    _controller.loadTrendingProducts();
+    _scrollController[1].addListener(() {
+      if (_scrollController[1].position.pixels >=
+          _scrollController[1].position.maxScrollExtent - 200) {
+        _controller.loadProducts();
+      }
+    });
+    _scrollController[2].addListener(() {
+      if (_scrollController[2].position.pixels >=
+          _scrollController[2].position.maxScrollExtent - 200) {
+        _controller.loadPopularProducts();
+      }
+    });
+    _scrollController[3].addListener(() {
+      if (_scrollController[3].position.pixels >=
+          _scrollController[3].position.maxScrollExtent - 200) {
+        _controller.loadTrendingProducts();
+      }
+    });
+    _scrollController[0].addListener(() {
+      if (_scrollController[0].position.pixels >=
+          _scrollController[0].position.maxScrollExtent - 200) {
+        _controller.fetchCategory();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _scrollController[2].dispose();
+    _scrollController[3].dispose();
+    _scrollController[1].dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,118 +98,125 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[900],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextField(
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Search products...',
-                          hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 14,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => RefreshIndicator.adaptive(
+          onRefresh: () => _controller.onRefresh(),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Colors.white.withOpacity(0.5),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                          child: TextField(
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'Search products...',
+                              hintStyle: TextStyle(
+                                color: Colors.white.withOpacity(0.5),
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                            onSubmitted: (value) =>
+                                _controller.searchProducts(value),
                           ),
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.tune,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.tune,
-                      color: Colors.white.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Categories
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Text(
-                'Categories',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      right: index < categories.length - 1 ? 16 : 0,
+                // Categories
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const Text(
+                    'Categories',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: CategoryIcon(
-                      name: categories[index]['name'],
-                      icon: categories[index]['icon'],
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    controller: _scrollController[0],
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _controller.categories.length,
+                    itemBuilder: (context, index) {
+                      final item = _controller.categories[index];
+                      return CategoryIcon(
+                        name: item.name,
+                        icon: "${ApiConfig.imageUrl}${item.image}",
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+                // Feature Products
+                _buildProductSection(
+                  'Feature Products',
+                  _controller.products,
+                  _controller.isLoading[1],
+                  _scrollController[1],
+                ),
+
+                // Popular Products
+                _buildProductSection(
+                  'Popular Products',
+                  _controller.popularProduct,
+                  _controller.isLoading[2],
+                  _scrollController[2],
+                ),
+
+                // Trending Products
+                _buildProductSection(
+                  'Trending Products',
+                  _controller.trendingProduct,
+                  _controller.isLoading[3],
+                  _scrollController[3],
+                ),
+
+                const SizedBox(height: 24),
+              ],
             ),
-            const SizedBox(height: 24),
-            // Feature Products
-            Obx(
-              () => _buildProductSection(
-                'Feature Products',
-                _controller.products,
-                _controller.isLoading.value,
-              ),
-            ),
-            // Popular Products
-            Obx(
-              () => _buildProductSection(
-                'Popular Products',
-                [],
-                _controller.isLoading.value,
-              ),
-            ),
-            // Trending Products
-            Obx(
-              () => _buildProductSection(
-                'Trending Products',
-                [],
-                _controller.isLoading.value,
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavBar(
@@ -184,6 +235,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     String title,
     List<ProductModel> products,
     bool isLoading,
+    ScrollController scrollController,
   ) {
     if (products.isEmpty) {
       return SizedBox.shrink();
@@ -212,18 +264,28 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   ),
                 )
               : ListView.builder(
+                  controller: scrollController,
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _controller.products.length,
+                  itemCount: products.length,
                   itemBuilder: (context, index) {
-                    final item = _controller.products[index];
+                    final item = products[index];
                     return Padding(
                       padding: EdgeInsets.only(right: index < 3 ? 12 : 0),
                       child: ProductCard(
                         id: item.id,
                         name: item.name,
-                        price: '\$${item.price}',
-                        image: ApiConfig.baseUrl + item.images.first,
+                        price: item.productType == "simple"
+                            ? item.price
+                            : item.variants.firstOrNull?.price ?? 0.0,
+                        image: ApiConfig.imageUrl + item.images.first,
+                        isBookedmark: item.isBookmarked,
+                        onAddBookmark: () {
+                          setState(() {
+                            item.isBookmarked = !item.isBookmarked;
+                          });
+                          _controller.addBookmark(item.id);
+                        },
                       ),
                     );
                   },

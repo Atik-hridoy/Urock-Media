@@ -27,9 +27,9 @@ class SingleProductModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
-  final bool isBookmarked;
+  bool isBookmarked;
 
-  const SingleProductModel({
+  SingleProductModel({
     required this.id,
     required this.seller,
     required this.category,
@@ -164,7 +164,7 @@ class SingleProductModel {
     'price': price,
     'minPrice': minPrice,
     'maxPrice': maxPrice,
-    'variantTypes': variantTypes.map((e) => e.toJson()).toList(),
+    // 'variantTypes': variantTypes.map((e) => e.toJson()).toList(),
     'variants': variants.map((e) => e.toJson()).toList(),
     'quantity': quantity,
     'discount': discount,
@@ -195,7 +195,7 @@ class SellerModel {
   });
 
   factory SellerModel.empty() =>
-      const SellerModel(id: '', name: '', image: '', country: '');
+      const SellerModel(id: '', name: '', image: '', country: 'N/A');
 
   factory SellerModel.fromJson(Map<String, dynamic> json) {
     return SellerModel(
@@ -211,42 +211,50 @@ class SellerModel {
 
 class VariantOptionModel {
   final String name;
+  final String? value; // hex color for Color, null for Size
 
-  const VariantOptionModel({required this.name});
+  VariantOptionModel({required this.name, this.value});
 
-  factory VariantOptionModel.empty() => const VariantOptionModel(name: '');
-
-  factory VariantOptionModel.fromJson(Map<String, dynamic> json) {
-    return VariantOptionModel(name: json['name'] ?? '');
+  factory VariantOptionModel.empty() {
+    return VariantOptionModel(name: '');
   }
 
-  Map<String, dynamic> toJson() => {'name': name};
+  factory VariantOptionModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return VariantOptionModel.empty();
+
+    return VariantOptionModel(
+      name: json['name'] ?? '',
+      value: json['value'], // optional
+    );
+  }
 }
 
 class VariantTypeModel {
   final String name;
   final List<VariantOptionModel> options;
 
-  const VariantTypeModel({required this.name, required this.options});
+  VariantTypeModel({required this.name, required this.options});
 
-  factory VariantTypeModel.empty() =>
-      const VariantTypeModel(name: '', options: []);
-
-  factory VariantTypeModel.fromJson(Map<String, dynamic> json) {
-    return VariantTypeModel(
-      name: json['name'] ?? '',
-      options:
-          (json['options'] as List<dynamic>?)
-              ?.map((e) => VariantOptionModel.fromJson(e))
-              .toList() ??
-          [],
-    );
+  /// Empty model
+  factory VariantTypeModel.empty() {
+    return VariantTypeModel(name: '', options: const []);
   }
 
-  Map<String, dynamic> toJson() => {
-    'name': name,
-    'options': options.map((e) => e.toJson()).toList(),
-  };
+  factory VariantTypeModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return VariantTypeModel.empty();
+
+    final rawOptions = json['options'];
+
+    final options = rawOptions is List
+        ? rawOptions
+              .whereType<Map<String, dynamic>>() // skip invalid items
+              .map((e) => VariantOptionModel.fromJson(e))
+              .where((e) => e.name.isNotEmpty) // skip empty option
+              .toList()
+        : <VariantOptionModel>[];
+
+    return VariantTypeModel(name: json['name'] ?? '', options: options);
+  }
 }
 
 class VariantModel {

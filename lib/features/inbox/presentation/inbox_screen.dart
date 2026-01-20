@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/features/inbox/logic/inbox_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/message_list_item.dart';
 import '../../home/widgets/bottom_nav_bar.dart';
@@ -83,6 +84,7 @@ class _InboxScreenState extends State<InboxScreen> {
     },
   ];
 
+  final _controller = InboxController();
   @override
   void dispose() {
     _searchController.dispose();
@@ -110,57 +112,62 @@ class _InboxScreenState extends State<InboxScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: _searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Search messages...',
-                  hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 14,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.white.withOpacity(0.5),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                  child: TextField(
+                    controller: _searchController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Search messages...',
+                      hintStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 14,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.white.withOpacity(0.5),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          // Messages list
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return MessageListItem(
-                  name: message['name'],
-                  message: message['message'],
-                  time: message['time'],
-                  avatar: message['avatar'],
-                  unreadCount: message['unreadCount'],
-                  isTyping: message['isTyping'],
-                );
-              },
-            ),
-          ),
-        ],
+              // Messages list
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final message = _messages[index];
+                    return MessageListItem(
+                      name: message['name'],
+                      message: message['message'],
+                      time: message['time'],
+                      avatar: message['avatar'],
+                      unreadCount: message['unreadCount'],
+                      isTyping: message['isTyping'],
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedNavIndex,
