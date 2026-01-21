@@ -34,6 +34,33 @@ class ProductRepository {
     }
   }
 
+  static Future<List<ProductModel>> loadCategoryProductsRepo(
+    int page, {
+    String? categoryId,
+  }) async {
+    ///  loads all the products
+    try {
+      final response = await ApiService().get(
+        ApiEndpoints.products,
+        queryParameters: {'page': page, 'categoryId': categoryId},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data['data'] as List;
+        final products = data
+            .map(
+              (e) =>
+                  e == null ? ProductModel.empty() : ProductModel.fromJson(e),
+            )
+            .toList();
+        return products;
+      }
+      return [];
+    } catch (e) {
+      Logger.error(e.toString());
+      return [];
+    }
+  }
+
   static Future<List<ProductModel>> loadFilteredProducts(String message) async {
     ///  loads all the products
     try {

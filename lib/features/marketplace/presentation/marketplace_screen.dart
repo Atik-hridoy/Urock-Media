@@ -101,6 +101,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) => RefreshIndicator.adaptive(
+          color: AppColors.white,
           onRefresh: () => _controller.onRefresh(),
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
@@ -182,6 +183,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                       final item = _controller.categories[index];
                       return CategoryIcon(
                         name: item.name,
+                        id: item.id,
                         icon: "${ApiConfig.imageUrl}${item.image}",
                       );
                     },
@@ -278,7 +280,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         price: item.productType == "simple"
                             ? item.price
                             : item.variants.firstOrNull?.price ?? 0.0,
-                        image: ApiConfig.imageUrl + item.images.first,
+                        image: item.images.isEmpty
+                            ? ""
+                            : ApiConfig.imageUrl + item.images.first,
                         isBookedmark: item.isBookmarked,
                         onAddBookmark: () {
                           setState(() {

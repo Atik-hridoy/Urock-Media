@@ -54,12 +54,15 @@ class ProductCard extends StatelessWidget {
                     // ),
                   ),
                   child: Center(
-                    child: Image.network(
-                      image,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        Icons.checkroom,
-                        size: 50,
-                        color: Colors.white.withOpacity(0.3),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        image,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.checkroom,
+                          size: 50,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
                       ),
                     ),
                   ),

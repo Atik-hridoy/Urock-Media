@@ -233,9 +233,11 @@ class AppRoutes {
           settings: settings,
         );
       case categoryProduct:
-        final category = settings.arguments as String;
+        final category = settings.arguments as Map<String, dynamic>;
+        final name = category['name'];
+        final id = category['id'];
         return MaterialPageRoute(
-          builder: (_) => CategoryProductScreen(category: category),
+          builder: (_) => CategoryProductScreen(category: name, id: id),
           settings: settings,
         );
 

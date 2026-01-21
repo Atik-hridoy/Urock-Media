@@ -129,7 +129,10 @@ class _CartScreenState extends State<CartScreen> {
                         onRemove: () {
                           cart.products.removeAt(index);
                           setState(() {});
-                          _controller.onDeleteCart(item.id);
+                          _controller.onDeleteCart(
+                            item.id,
+                            variantId: item.variantId,
+                          );
                         },
                       );
                     },

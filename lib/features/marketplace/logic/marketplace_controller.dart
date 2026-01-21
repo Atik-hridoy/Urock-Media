@@ -14,12 +14,10 @@ class MarketplaceController extends ChangeNotifier {
   var _products = <ProductModel>[];
   var popularProduct = <ProductModel>[];
   var trendingProduct = <ProductModel>[];
-  var isLoading = [
-    false,
-    false,
-    false,
-    false,
-  ]; // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
+  var isLoading = List.generate(
+    4,
+    (index) => false,
+  ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
   var singleProduct = Rxn<SingleProductModel>();
   String _selectedCategory = 'All';
@@ -29,19 +27,15 @@ class MarketplaceController extends ChangeNotifier {
   List<ProductModel> get products => _products;
   String get selectedCategory => _selectedCategory;
 
-  List<int> page = [
-    1,
-    1,
-    1,
-    1,
-  ]; // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
+  List<int> page = List.generate(
+    4,
+    (index) => 1,
+  ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
-  List<bool> hasMore = [
-    true,
-    true,
-    true,
-    true,
-  ]; // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
+  List<bool> hasMore = List.generate(
+    4,
+    (index) => true,
+  ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
   /// Load products
   Future<void> loadProducts() async {
@@ -206,29 +200,34 @@ class MarketplaceController extends ChangeNotifier {
 
   Future onRefreshCart() async {
     fetchCart();
+    notifyListeners();
   }
 
   onquantityIncrease(String id, String? variantId) async {
-    // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity++;
     try {
+      // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity++;
       await ApiService().patch(
         "${ApiEndpoints.cartItem}$id/increment",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
     } catch (e) {
       Logger.error("quantity increase", e);
+    } finally {
+      notifyListeners();
     }
   }
 
   onQuantityDecrease(String id, String? variantId) async {
-    // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity--;
     try {
+      // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity--;
       await ApiService().patch(
         "${ApiEndpoints.cartItem}$id/decrement",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
     } catch (e) {
       Logger.error("quantity decrease", e);
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -246,19 +245,26 @@ class MarketplaceController extends ChangeNotifier {
     return Color(int.parse(hex, radix: 16));
   }
 
-  onDeleteCart(String id, {String? varientId}) async {
-    // need to complete
-    cartItem.value!.products.removeWhere((e) => e.id == id);
+  onDeleteCart(String id, {String? variantId}) async {
     try {
+      // cartItem.value!.products.removeWhere((e) => e.id == id);
       cartItem.value!.products.removeWhere((e) => e.id == id);
-      await ApiService().delete("${ApiEndpoints.cartItem}$id");
+      await ApiService().delete(
+        "${ApiEndpoints.cartItem}$id",
+        queryParameters: {if (variantId != null) 'variantId': variantId},
+      );
     } catch (e) {
       Logger.error("cart delete", e);
+    } finally {
+      notifyListeners();
     }
   }
 
   void fetchCategory() async {
     if (isLoading[0] || !hasMore[0]) return;
+    if (page[0] == 1) {
+      categories.clear();
+    }
     isLoading[0] = true;
     notifyListeners();
     try {
@@ -291,5 +297,6 @@ class MarketplaceController extends ChangeNotifier {
     fetchCategory();
     loadPopularProducts();
     loadTrendingProducts();
+    notifyListeners();
   }
 }

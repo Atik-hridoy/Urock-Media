@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -107,59 +108,65 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             colors: [Colors.grey[700]!, Colors.grey[900]!],
                           ),
                         ),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child:
-                                  _controller
-                                      .singleProduct
-                                      .value!
-                                      .images
-                                      .isNotEmpty
-                                  ? Image.network(
-                                      "${ApiConfig.imageUrl}${item.images[_selectedImageIndex]}",
-                                      errorBuilder:
-                                          (context, error, stackTrace) => Icon(
-                                            Icons.checkroom,
-                                            size: 100,
-                                            color: Colors.white.withOpacity(
-                                              0.3,
-                                            ),
-                                          ),
-                                    )
-                                  : Icon(
-                                      Icons.checkroom,
-                                      size: 100,
-                                      color: Colors.white.withOpacity(0.3),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Stack(
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: item.images.isNotEmpty
+                                    ? SingleChildScrollView(
+                                        child: Image.network(
+                                          "${ApiConfig.imageUrl}${item.images[_selectedImageIndex]}",
+                                          fit: BoxFit.cover,
+
+                                          // width: double.infinity,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Icon(
+                                                    Icons.checkroom,
+                                                    size: 100,
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                  ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Icon(
+                                          Icons.checkroom,
+                                          size: 100,
+                                          color: Colors.white.withOpacity(0.3),
+                                        ),
+                                      ),
+                              ),
+                              Positioned(
+                                top: 16,
+                                right: 16,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      item.isBookmarked = !item.isBookmarked;
+                                    });
+                                    _controller.addBookmark(item.id);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
                                     ),
-                            ),
-                            Positioned(
-                              top: 16,
-                              right: 16,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    item.isBookmarked = !item.isBookmarked;
-                                  });
-                                  _controller.addBookmark(item.id);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    item.isBookmarked
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: Colors.black,
-                                    size: 20,
+                                    child: Icon(
+                                      item.isBookmarked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       // Thumbnail Images
@@ -192,14 +199,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ],
                                   ),
                                 ),
-                                child: Image.network(
-                                  "${ApiConfig.imageUrl}${item.images[index]}",
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(
-                                        Icons.checkroom,
-                                        size: 50,
-                                        color: Colors.white.withOpacity(0.3),
-                                      ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    "${ApiConfig.imageUrl}${item.images[index]}",
+                                    errorBuilder:
+                                        (context, error, stackTrace) => Icon(
+                                          Icons.checkroom,
+                                          size: 50,
+                                          color: Colors.white.withOpacity(0.3),
+                                        ),
+                                  ),
                                 ),
                               ),
                             );
@@ -250,28 +260,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.grey[800],
                                 borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    "${ApiConfig.imageUrl}${_controller.singleProduct.value?.seller.name}",
-                                  ),
-                                  onError: (exception, stackTrace) => Text(
-                                    'PF',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                              ),
+                              child: ClipRRect(
+                                child: Image.network(
+                                  "${ApiConfig.imageUrl}${item.seller.name}",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                        child: Text(
+                                          'PF',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                 ),
                               ),
-                              // child: const Center(
-                              //   child: Text(
-                              //     'PF',
-                              //     style: TextStyle(
-                              //       color: Colors.white,
-                              //       fontWeight: FontWeight.bold,
-                              //     ),
-                              //   ),
-                              // ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -279,12 +284,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _controller
-                                            .singleProduct
-                                            .value
-                                            ?.seller
-                                            .name ??
-                                        "Unknown User",
+                                    item.seller.name,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -292,12 +292,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ),
                                   ),
                                   Text(
-                                    _controller
-                                            .singleProduct
-                                            .value
-                                            ?.seller
-                                            .country ??
-                                        "N/A",
+                                    item.seller.country,
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12,
@@ -366,85 +361,80 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       const SizedBox(height: 24),
                       // Color Selection
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Color:',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                      if (item.variantTypes.isNotEmpty &&
+                          (item.variantTypes
+                                  .firstWhereOrNull((e) => e.name == "Color")
+                                  ?.options
+                                  .isNotEmpty ??
+                              false)) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Color:',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: List.generate(
-                                (_controller
-                                            .singleProduct
-                                            .value
-                                            ?.variantTypes
-                                            .isNotEmpty ??
-                                        false)
-                                    ? _controller
-                                          .singleProduct
-                                          .value!
-                                          .variantTypes
-                                          .last
-                                          .options
-                                          .length
-                                    : 0,
-                                (index) {
-                                  final color = _controller
-                                      .singleProduct
-                                      .value
-                                      ?.variantTypes
-                                      .last
-                                      .options[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedColorIndex = index;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 36,
-                                      height: 36,
-                                      margin: EdgeInsets.only(
-                                        right: index < colors.length - 1
-                                            ? 12
-                                            : 0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: _controller.hexToColor(
-                                          color?.value ?? "#FFFFFF",
+                              const SizedBox(height: 12),
+
+                              Row(
+                                children: List.generate(
+                                  item.variantTypes
+                                      .firstWhere((e) => e.name == "Color")
+                                      .options
+                                      .length,
+                                  (index) {
+                                    final color = item.variantTypes
+                                        .firstWhere((e) => e.name == "Color")
+                                        .options[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedColorIndex = index;
+                                        });
+                                      },
+                                      child: Container(
+                                        width: 36,
+                                        height: 36,
+                                        margin: EdgeInsets.only(
+                                          right: index < colors.length - 1
+                                              ? 12
+                                              : 0,
                                         ),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: _selectedColorIndex == index
-                                              ? AppColors.goldLight
-                                              : Colors.transparent,
-                                          width: 2,
+                                        decoration: BoxDecoration(
+                                          color: _controller.hexToColor(
+                                            color.value ?? "#FFFFFF",
+                                          ),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: _selectedColorIndex == index
+                                                ? AppColors.goldLight
+                                                : Colors.transparent,
+                                            width: 2,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
+                      ],
                       // Size Selection
-                      if (_controller
-                              .singleProduct
-                              .value
-                              ?.variants
-                              .isNotEmpty ??
-                          false)
+                      if (item.variantTypes.isNotEmpty &&
+                          (item.variantTypes
+                                  .firstWhereOrNull((e) => e.name == "Size")
+                                  ?.options
+                                  .isNotEmpty ??
+                              false))
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
@@ -463,15 +453,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: List.generate(
-                                    _controller
-                                            .singleProduct
-                                            .value
-                                            ?.variantTypes
-                                            .first
-                                            .options
-                                            .length ??
-                                        0,
+                                    item.variantTypes
+                                        .firstWhere((e) => e.name == "Size")
+                                        .options
+                                        .length,
                                     (index) {
+                                      final size = item.variantTypes
+                                          .firstWhere((e) => e.name == "Size")
+                                          .options[index];
                                       return GestureDetector(
                                         onTap: () {
                                           setState(() {
@@ -505,13 +494,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             ),
                                           ),
                                           child: Text(
-                                            _controller
-                                                .singleProduct
-                                                .value!
-                                                .variantTypes
-                                                .first
-                                                .options[index]
-                                                .name,
+                                            size.name,
                                             style: TextStyle(
                                               color: _selectedSizeIndex == index
                                                   ? Colors.black
@@ -546,19 +529,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           onPressed: () async {
                             if (await _controller.addToCart(
                               index: _selectedSizeIndex,
-                              color:
-                                  _controller
-                                      .singleProduct
-                                      .value
-                                      ?.variantTypes
-                                      .last
-                                      .options[_selectedColorIndex]
-                                      .name ??
-                                  "White",
-                              size: _controller
-                                  .singleProduct
-                                  .value
-                                  ?.variantTypes
+                              color: item
+                                  .variantTypes
+                                  .last
+                                  .options[_selectedColorIndex]
+                                  .name,
+                              size: item
+                                  .variantTypes
                                   .first
                                   .options[_selectedSizeIndex]
                                   .name,

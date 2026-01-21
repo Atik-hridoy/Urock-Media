@@ -5,16 +5,23 @@ import 'package:urock_media_movie_app/routes/app_routes.dart';
 class CategoryIcon extends StatelessWidget {
   final String name;
   final String icon;
+  final String id;
 
-  const CategoryIcon({super.key, required this.name, required this.icon});
+  const CategoryIcon({
+    super.key,
+    required this.name,
+    required this.icon,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(
-          context,
-        ).pushNamed(AppRoutes.categoryProduct, arguments: name);
+        Navigator.of(context).pushNamed(
+          AppRoutes.categoryProduct,
+          arguments: {'name': name, 'id': id},
+        );
       },
       child: Column(
         children: [
@@ -25,13 +32,22 @@ class CategoryIcon extends StatelessWidget {
               color: const Color(0xFF2C2C2C),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Image.network(
-              icon,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  Icon(Icons.checkroom, color: Colors.white, size: 28),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                icon,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.checkroom,
+                    color: Colors.white,
+                    size: 28,
+                  );
+                },
+              ),
             ),
           ),
+
           const SizedBox(height: 8),
           SizedBox(
             width: 70,
