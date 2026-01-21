@@ -233,7 +233,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context,
                         name: _nameController.text.trim(),
                         userName: _usernameController.text.trim(),
-                        image: _selectedImage!.path,
+                        image: _selectedImage?.path,
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.goldLight,
@@ -244,7 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       child: Text(
                         _controller.isLoading
-                            ? 'Saving Changes...'
+                            ? 'Saving Changes. Please wait ...'
                             : 'Save Changes',
                         style: TextStyle(
                           fontSize: 16,

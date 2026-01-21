@@ -32,6 +32,7 @@ class ProfileRepo {
           if (userName != null) 'userName': userName,
         }),
       });
+
       final response = await ApiService().patch(
         ApiEndpoints.profile,
         data: formData,
