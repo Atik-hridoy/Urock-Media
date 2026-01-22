@@ -1,12 +1,9 @@
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/core/constants/app_sizes.dart';
 import 'package:urock_media_movie_app/core/services/storage_service.dart';
-import 'package:urock_media_movie_app/core/widgets/no_data.dart';
 import 'package:urock_media_movie_app/features/chat/logic/chat_controller.dart';
 import 'package:urock_media_movie_app/features/inbox/logic/inbox_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -19,12 +16,20 @@ class ChatScreen extends StatefulWidget {
   final String name;
   final String avatar;
   final String chatId;
+  final String userId;
+  final bool isBlocked;
+  bool isMuted;
+  final bool isActive;
 
-  const ChatScreen({
+  ChatScreen({
     super.key,
     required this.name,
     required this.avatar,
     required this.chatId,
+    required this.userId,
+    required this.isBlocked,
+    required this.isMuted,
+    required this.isActive,
   });
 
   @override
@@ -147,10 +152,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Text(
-                  'Active now',
-                  style: TextStyle(color: Colors.green, fontSize: 12),
-                ),
+                if (widget.isActive)
+                  const Text(
+                    'Active now',
+                    style: TextStyle(color: Colors.green, fontSize: 12),
+                  ),
               ],
             ),
           ],
@@ -166,7 +172,19 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () {
-              ChatOptionsBottomSheet.show(context);
+              ChatOptionsBottomSheet.show(
+                chatId: widget.chatId,
+                context: context,
+                isBlocked: widget.isBlocked,
+                isMuted: widget.isMuted,
+                userId: widget.userId,
+                onMuted: () {
+                  setState(() {
+                    widget.isMuted = !widget.isMuted;
+                  });
+                  _controller.muteChat(widget.chatId);
+                },
+              );
             },
           ),
         ],
@@ -183,9 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
           }
 
           final allMessage = _controller.messages;
-          if (allMessage.isEmpty) {
-            return NoData(onPressed: () => _controller.loadMessages());
-          }
+
           return Column(
             children: [
               // Messages list

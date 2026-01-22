@@ -104,6 +104,8 @@ class ApiEndpoints {
   static const String sendMessage = "/messages/send-message/";
   static const String chatDelete = "/chats/delete/";
   static const String muteChat = "/chats/mute-unmute/";
+  static const String blockUser = "/chat/block-unblock/";
+  static const String createChat = "/chats/create";
 
   // ==================== Profile ======================
   static const String profile = "/users/profile";

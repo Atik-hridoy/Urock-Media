@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/constants/app_sizes.dart';
+import 'package:urock_media_movie_app/features/chat/widgets/image_preview_screen.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Chat message bubble widget
@@ -76,7 +77,7 @@ class ChatMessageBubble extends StatelessWidget {
               ],
               Flexible(
                 child: image != null
-                    ? _buildImageMessage()
+                    ? _buildImageMessage(context)
                     : _buildTextMessage(),
               ),
             ],
@@ -103,53 +104,65 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildImageMessage() {
-    return Container(
-      width: 200,
-      height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.purple[700]!, Colors.blue[700]!],
+  Widget _buildImageMessage(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (image == null || image!.isEmpty) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ImagePreviewScreen(imageUrl: image!),
+          ),
+        );
+      },
+      child: Container(
+        width: 200,
+        height: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.purple[700]!, Colors.blue[700]!],
+          ),
         ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          image ?? "",
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Stack(
-            children: [
-              // Placeholder for laptop image
-              Center(
-                child: Icon(
-                  Icons.laptop_mac,
-                  size: 60,
-                  color: Colors.white.withOpacity(0.8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.network(
+            image ?? "",
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Stack(
+              children: [
+                // Placeholder for laptop image
+                Center(
+                  child: Icon(
+                    Icons.laptop_mac,
+                    size: 60,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
                 ),
-              ),
-              // Gradient overlay
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.6),
-                      ],
+                // Gradient overlay
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.6),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

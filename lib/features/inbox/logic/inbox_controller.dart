@@ -36,6 +36,13 @@ class InboxController extends ChangeNotifier {
     }
   }
 
+  Future onRefresh() async {
+    page = 1;
+    hasMore = true;
+    messages.clear();
+    loadMessages();
+  }
+
   /// Mark message as read
   void markAsRead(String messageId) {
     Logger.info('Marking message as read: $messageId');
@@ -43,12 +50,12 @@ class InboxController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Delete message
-  void deleteMessage(String messageId) {
-    Logger.info('Deleting message: $messageId');
-    // TODO: Implement delete functionality
-    notifyListeners();
-  }
+  // /// Delete message
+  // void deleteMessage(String messageId) {
+  //   Logger.info('Deleting message: $messageId');
+  //   // TODO: Implement delete functionality
+  //   notifyListeners();
+  // }
 
   String timeAgoShort(DateTime? dateTime) {
     if (dateTime == null) return '';
@@ -70,6 +77,22 @@ class InboxController extends ChangeNotifier {
       return '${(diff.inDays / 30).floor()}mo';
     } else {
       return '${(diff.inDays / 365).floor()}y';
+    }
+  }
+
+  void searchMessage(String message) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      Logger.info('Loading search messages');
+
+      messagesResponse = await ChatRepository.fetchSearchChatRepo(message);
+      messages = messagesResponse.chats;
+    } catch (e, stackTrace) {
+      Logger.error('Failed to load messages', e, stackTrace);
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

@@ -122,7 +122,7 @@ class AppRoutes {
         );
 
       case chat:
-        final args = settings.arguments as Map<String, String>?;
+        final args = settings.arguments as Map<String, dynamic>?;
         if (args == null) {
           return _errorRoute('Chat data is required');
         }
@@ -131,6 +131,10 @@ class AppRoutes {
             name: args['name'] ?? 'Unknown',
             avatar: args['avatar'] ?? 'U',
             chatId: args['chatId'] as String,
+            userId: args['userId'] as String,
+            isBlocked: args['isBlocked'] as bool,
+            isMuted: args['isMuted'] as bool,
+            isActive: args['isActive'] as bool,
           ),
           settings: settings,
         );
