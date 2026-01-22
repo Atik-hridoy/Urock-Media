@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class MessageResponseModel {
   final List<MessageModel> messages;
   final List<MessageModel> pinnedMessages;
@@ -47,6 +48,7 @@ class MessageModel {
   final String type;
   final bool isDeleted;
   final bool isPinned;
+  bool isMuted;
   final MessageModel? replyTo;
   final String? text;
   final List<String> iconViewed;
@@ -66,7 +68,9 @@ class MessageModel {
     required this.type,
     required this.isDeleted,
     required this.isPinned,
+    required this.isMuted,
     required this.replyTo,
+    this.text,
     required this.iconViewed,
     required this.createdAt,
     required this.pinnedByUsers,
@@ -74,7 +78,6 @@ class MessageModel {
     required this.reactions,
     required this.updatedAt,
     required this.isPinnedByCurrentUser,
-    this.text,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
@@ -94,6 +97,7 @@ class MessageModel {
       replyTo: json['replyTo'] != null
           ? MessageModel.fromJson(json['replyTo'])
           : null,
+      isMuted: json['isMuted'] ?? false,
       iconViewed:
           (json['iconViewed'] as List<dynamic>?)
               ?.map((e) => e.toString())
@@ -137,6 +141,7 @@ class MessageModel {
       isDeleted: false,
       isPinned: false,
       replyTo: null,
+      isMuted: false,
       iconViewed: [],
       createdAt: null,
       pinnedByUsers: [],
@@ -172,6 +177,7 @@ class MessageModel {
       images: images ?? this.images,
       read: read ?? this.read,
       type: type ?? this.type,
+      isMuted: isMuted,
       text: text ?? this.text,
       isDeleted: isDeleted ?? this.isDeleted,
       isPinned: isPinned ?? this.isPinned,

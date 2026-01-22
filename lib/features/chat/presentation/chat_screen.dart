@@ -156,12 +156,13 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_off, color: Colors.white),
-            onPressed: () {
-              _controller.muteChat();
-            },
-          ),
+          // if (_controller.isMuted)
+          //   IconButton(
+          //     icon: const Icon(Icons.notifications_off, color: Colors.white),
+          //     onPressed: () {
+          //       _controller.muteChat();
+          //     },
+          //   ),
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () {

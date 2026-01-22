@@ -16,7 +16,6 @@ class ChatController extends ChangeNotifier {
   bool _isLoading = false;
 
   String chatId = "";
-  bool isMuted = false;
 
   List<MessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
@@ -114,24 +113,6 @@ class ChatController extends ChangeNotifier {
     } catch (e) {
       Logger.error("delete chat", e);
       return false;
-    }
-  }
-
-  Future<void> muteChat() async {
-    try {
-      final response = await ApiService().patch(
-        "${ApiEndpoints.muteChat}$chatId",
-      );
-      if (response.statusCode == 200) {
-        isMuted = true;
-        notifyListeners();
-      }
-      isMuted = false;
-      notifyListeners();
-    } catch (e) {
-      Logger.error("mute chat", e);
-      isMuted = false;
-      notifyListeners();
     }
   }
 }
