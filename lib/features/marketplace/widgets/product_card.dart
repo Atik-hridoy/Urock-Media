@@ -4,19 +4,30 @@ import '../../../core/constants/app_colors.dart';
 /// Product card widget for marketplace
 class ProductCard extends StatelessWidget {
   final String name;
-  final String price;
+  final double price;
+  final String image;
+  final String id;
+  final bool isBookedmark;
+  final VoidCallback onAddBookmark;
 
   const ProductCard({
     super.key,
     required this.name,
     required this.price,
+    required this.image,
+    required this.id,
+    required this.onAddBookmark,
+    required this.isBookedmark,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed('/product-details');
+        Navigator.of(context).pushNamed('/product-details', arguments: id);
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(builder: (context) => ProductDetailsScreen(id: id)),
+        // );
       },
       child: Container(
         width: 160,
@@ -36,20 +47,25 @@ class ProductCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.grey[700]!,
-                        Colors.grey[900]!,
-                      ],
-                    ),
+                    // gradient: LinearGradient(
+                    //   begin: Alignment.topLeft,
+                    //   end: Alignment.bottomRight,
+                    //   colors: [Colors.grey[700]!, Colors.grey[900]!],
+                    // ),
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.checkroom,
-                      size: 50,
-                      color: Colors.white.withOpacity(0.3),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        image,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.checkroom,
+                          size: 50,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -57,16 +73,19 @@ class ProductCard extends StatelessWidget {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                      size: 18,
+                  child: GestureDetector(
+                    onTap: onAddBookmark,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isBookedmark ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ),
@@ -90,7 +109,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    price,
+                    '\$$price',
                     style: TextStyle(
                       color: AppColors.goldLight,
                       fontSize: 16,

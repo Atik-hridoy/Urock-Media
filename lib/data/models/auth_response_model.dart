@@ -16,8 +16,10 @@ class AuthResponseModel {
     return AuthResponseModel(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      token: json['token'],
-      user: json['user'] != null ? UserData.fromJson(json['user']) : null,
+      token: json['data']['token'],
+      user: json['data']['user'] != null
+          ? UserData.fromJson(json['data']['user'])
+          : null,
     );
   }
 
@@ -33,7 +35,7 @@ class AuthResponseModel {
 
 /// User Data Model
 class UserData {
-  final int? id;
+  final String? id;
   final String? name;
   final String? email;
   final String? phone;
@@ -51,7 +53,7 @@ class UserData {
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
-      id: json['id'],
+      id: json['_id'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],

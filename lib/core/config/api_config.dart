@@ -14,6 +14,7 @@ class ApiConfig {
   static const String _devBaseUrl = 'http://10.10.7.41:5001/api/v1';
   static const String _stagingBaseUrl = 'http://10.10.7.41:5001/api/v1';
   static const String _productionBaseUrl = 'http://10.10.7.41:5001/api/v1';
+  static const String imageUrl = 'http://10.10.7.41:5001';
 
   /// Get base URL based on environment
   static String get baseUrl {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/features/marketplace/presentation/category_product_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/auth/views/sign_in_screen.dart';
@@ -56,12 +57,13 @@ class AppRoutes {
   static const String productDetails = '/product-details';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
+  static const String categoryProduct = '/category-product';
 
   /// Generate routes with TV detection
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Check if route should be redirected to TV version
     String routeName = settings.name ?? splash;
-    
+
     // TV detection will be handled at the widget level for better context access
     switch (routeName) {
       case splash:
@@ -128,6 +130,7 @@ class AppRoutes {
           builder: (_) => ChatScreen(
             name: args['name'] ?? 'Unknown',
             avatar: args['avatar'] ?? 'U',
+            chatId: args['chatId'] as String,
           ),
           settings: settings,
         );
@@ -213,8 +216,9 @@ class AppRoutes {
         );
 
       case productDetails:
+        final id = settings.arguments as String;
         return MaterialPageRoute(
-          builder: (_) => const ProductDetailsScreen(),
+          builder: (_) => ProductDetailsScreen(id: id),
           settings: settings,
         );
 
@@ -227,6 +231,14 @@ class AppRoutes {
       case checkout:
         return MaterialPageRoute(
           builder: (_) => const CheckoutScreen(),
+          settings: settings,
+        );
+      case categoryProduct:
+        final category = settings.arguments as Map<String, dynamic>;
+        final name = category['name'];
+        final id = category['id'];
+        return MaterialPageRoute(
+          builder: (_) => CategoryProductScreen(category: name, id: id),
           settings: settings,
         );
 
@@ -252,30 +264,31 @@ class AppRoutes {
 
   /// Get all route names
   static List<String> get allRoutes => [
-        splash,
-        onboarding,
-        auth,
-        signup,
-        otp,
-        interest,
-        home,
-        search,
-        inbox,
-        chat,
-        liveTv,
-        tvLiveTv,
-        channelCategories,
-        movieDetails,
-        seriesDetails,
-        profile,
-        editProfile,
-        helpSupport,
-        privacyPolicy,
-        faq,
-        changePassword,
-        marketplace,
-        productDetails,
-        cart,
-        checkout,
-      ];
+    splash,
+    onboarding,
+    auth,
+    signup,
+    otp,
+    interest,
+    home,
+    search,
+    inbox,
+    chat,
+    liveTv,
+    tvLiveTv,
+    channelCategories,
+    movieDetails,
+    seriesDetails,
+    profile,
+    editProfile,
+    helpSupport,
+    privacyPolicy,
+    faq,
+    changePassword,
+    marketplace,
+    productDetails,
+    cart,
+    checkout,
+    categoryProduct,
+  ];
 }

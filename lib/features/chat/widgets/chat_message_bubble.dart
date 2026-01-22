@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/core/constants/app_sizes.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Chat message bubble widget
@@ -7,7 +8,7 @@ class ChatMessageBubble extends StatelessWidget {
   final bool isMe;
   final String time;
   final String? avatar;
-  final bool hasImage;
+  final String? image;
 
   const ChatMessageBubble({
     super.key,
@@ -15,7 +16,7 @@ class ChatMessageBubble extends StatelessWidget {
     required this.isMe,
     required this.time,
     this.avatar,
-    this.hasImage = false,
+    this.image,
   });
 
   @override
@@ -23,7 +24,9 @@ class ChatMessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           // Time stamp
           if (!isMe && text != null)
@@ -39,26 +42,40 @@ class ChatMessageBubble extends StatelessWidget {
             ),
           // Message bubble
           Row(
-            mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMe
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isMe && avatar != null) ...[
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: _getAvatarColor(),
-                  child: Text(
-                    avatar!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                SizedBox(
+                  width: AppSizes.iconLG,
+                  height: AppSizes.iconLG,
+
+                  child: ClipOval(
+                    child: Image.network(
+                      avatar!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          CircleAvatar(
+                            radius: 16,
+                            backgroundColor: _getAvatarColor(),
+                            child: Text(
+                              avatar!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
               ],
               Flexible(
-                child: hasImage
+                child: image != null
                     ? _buildImageMessage()
                     : _buildTextMessage(),
               ),
@@ -95,44 +112,45 @@ class ChatMessageBubble extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.purple[700]!,
-            Colors.blue[700]!,
-          ],
+          colors: [Colors.purple[700]!, Colors.blue[700]!],
         ),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            // Placeholder for laptop image
-            Center(
-              child: Icon(
-                Icons.laptop_mac,
-                size: 60,
-                color: Colors.white.withOpacity(0.8),
+        child: Image.network(
+          image ?? "",
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Stack(
+            children: [
+              // Placeholder for laptop image
+              Center(
+                child: Icon(
+                  Icons.laptop_mac,
+                  size: 60,
+                  color: Colors.white.withOpacity(0.8),
+                ),
               ),
-            ),
-            // Gradient overlay
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.6),
-                    ],
+              // Gradient overlay
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.6),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -140,7 +158,7 @@ class ChatMessageBubble extends StatelessWidget {
 
   Color _getAvatarColor() {
     if (avatar == null) return Colors.grey;
-    
+
     final colors = [
       Colors.blue,
       Colors.green,

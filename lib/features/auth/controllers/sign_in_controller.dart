@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../core/utils/app_logger.dart';
@@ -5,13 +6,17 @@ import '../../../core/services/storage_service.dart';
 
 /// Controller for sign-in screen logic with API integration
 class SignInController {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(
+    text: kDebugMode ? "user@gmail.com" : "",
+  );
+  final TextEditingController passwordController = TextEditingController(
+    text: kDebugMode ? "hello123" : "",
+  );
   final AuthRepository _authRepository = AuthRepository();
-  
+
   bool _obscurePassword = true;
   bool get obscurePassword => _obscurePassword;
-  
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -65,10 +70,11 @@ class SignInController {
       _isLoading = false;
 
       if (response.success) {
-        AppLogger.success('Sign in successful', data: {
-          'email': email,
-          'user': response.user?.name,
-        });
+        AppLogger.success(
+          'Sign in successful',
+          data: {'email': email, 'user': response.user?.name},
+        );
+
         return true;
       } else {
         AppLogger.error('Sign in failed', error: response.message);
@@ -93,7 +99,7 @@ class SignInController {
   /// Handle forgot password
   Future<void> forgotPassword() async {
     final email = emailController.text.trim();
-    
+
     if (email.isEmpty || !isValidEmail(email)) {
       AppLogger.warning('Invalid email for forgot password');
       return;
@@ -101,16 +107,20 @@ class SignInController {
 
     try {
       AppLogger.info('Forgot password request', data: {'email': email});
-      
+
       final response = await _authRepository.forgotPassword(email: email);
-      
+
       if (response.success) {
         AppLogger.success('Password reset email sent', data: {'email': email});
       } else {
         AppLogger.error('Forgot password failed', error: response.message);
       }
     } catch (e, stackTrace) {
-      AppLogger.error('Forgot password error', error: e, stackTrace: stackTrace);
+      AppLogger.error(
+        'Forgot password error',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
