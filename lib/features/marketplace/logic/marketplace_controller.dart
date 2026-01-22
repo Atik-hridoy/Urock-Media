@@ -130,6 +130,9 @@ class MarketplaceController extends ChangeNotifier {
       Logger.info('Loading filtered products');
 
       _products = await ProductRepository.loadFilteredProducts(query);
+      popularProduct.clear();
+      trendingProduct.clear();
+      categories.clear();
 
       // _products = [];
     } catch (e, stackTrace) {

@@ -191,6 +191,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               ProfileMenuItem(
+                icon: Icons.privacy_tip_outlined,
+                title: 'Term and Condition',
+                onTap: () {
+                  Navigator.of(context).pushNamed(AppRoutes.termCondition);
+                },
+              ),
+              ProfileMenuItem(
+                icon: Icons.privacy_tip_outlined,
+                title: 'About Us',
+                onTap: () {
+                  Navigator.of(context).pushNamed(AppRoutes.about);
+                },
+              ),
+              ProfileMenuItem(
                 icon: Icons.card_membership_outlined,
                 title: 'Subscription',
                 onTap: () {

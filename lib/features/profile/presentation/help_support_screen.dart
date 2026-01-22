@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/features/profile/logic/profile_controller.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Help & Support screen
@@ -105,7 +106,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _sendMessage,
+                  onPressed: () => ProfileController().sendSupport(
+                    _emailController.text.trim(),
+                    _subjectController.text.trim(),
+                    _messageController.text,
+                    context,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.goldLight,
                     foregroundColor: Colors.black,
@@ -115,10 +121,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   ),
                   child: const Text(
                     'Send',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -152,10 +155,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.3),
-              width: 1,
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
           ),
           child: TextField(
             controller: controller,

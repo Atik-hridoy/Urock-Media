@@ -5,20 +5,20 @@ import 'package:urock_media_movie_app/features/profile/logic/profile_controller.
 import '../../../core/constants/app_colors.dart';
 
 /// Privacy Policy screen
-class PrivacyPolicyScreen extends StatefulWidget {
-  const PrivacyPolicyScreen({super.key});
+class AboutScreen extends StatefulWidget {
+  const AboutScreen({super.key});
 
   @override
-  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+  State<AboutScreen> createState() => _AboutScreenState();
 }
 
-class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+class _AboutScreenState extends State<AboutScreen> {
   final _controller = ProfileController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadPrivacyPolicy();
+    _controller.loadAbout();
   }
 
   @override
@@ -33,7 +33,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Privacy Policy',
+          'About',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -44,14 +44,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       body: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) => _controller.privacyPolicy.isEmpty
+        builder: (context, child) => _controller.about.isEmpty
             ? NoData(
-                onPressed: () => _controller.loadPrivacyPolicy(),
-                text: "No privacy policy found",
+                onPressed: () => _controller.loadAbout(),
+                text: "No about us found",
               )
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                child: Html(data: _controller.privacyPolicy),
+                child: Html(data: _controller.about),
                 // child: Column(
                 //   crossAxisAlignment: CrossAxisAlignment.start,
                 //   children: [
