@@ -5,7 +5,6 @@ import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/cart_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/category_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/product_model.dart';
-import 'package:urock_media_movie_app/features/marketplace/data/model/single_product_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/repository/product_repository.dart';
 import '../../../core/utils/logger.dart';
 
@@ -19,7 +18,6 @@ class MarketplaceController extends ChangeNotifier {
     (index) => false,
   ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
-  var singleProduct = Rxn<SingleProductModel>();
   String _selectedCategory = 'All';
   var cartItem = Rxn<CartModel>();
   var categories = <CategoryModel>[].obs;
@@ -116,19 +114,6 @@ class MarketplaceController extends ChangeNotifier {
     }
   }
 
-  Future loadSingleProduct(String id) async {
-    isLoading.first = true;
-    notifyListeners();
-    try {
-      singleProduct.value = await ProductRepository.loadSingleProduct(id);
-    } catch (e, stackTrace) {
-      Logger.error("load single product", e, stackTrace);
-    } finally {
-      isLoading.first = false;
-      notifyListeners();
-    }
-  }
-
   /// Filter products by category
   void filterByCategory(String category) {
     _selectedCategory = category;
@@ -152,35 +137,6 @@ class MarketplaceController extends ChangeNotifier {
     } finally {
       isLoading.first = false;
       notifyListeners();
-    }
-  }
-
-  Future<bool> addToCart({int? index, String? color, String? size}) async {
-    if (singleProduct.value == null) return false;
-    dynamic body;
-    if (singleProduct.value!.productType == "simple") {
-      body = {
-        "productId": singleProduct.value!.id,
-        "price": singleProduct.value!.price,
-        "quantity": 1,
-      };
-    } else {
-      body = {
-        "productId": singleProduct.value!.id,
-        "variantId": singleProduct.value!.variants[index!].variantId,
-        "price": singleProduct.value!.variants[index].price,
-        "quantity": 1,
-        "selectedAttributes": {"Color": color, "Size": size},
-      };
-    }
-
-    final response = await ProductRepository.addToCart(body);
-    if (response) {
-      Logger.info("Successfully added to cart");
-      return true;
-    } else {
-      Logger.info("Failed to add cart");
-      return false;
     }
   }
 
@@ -235,26 +191,18 @@ class MarketplaceController extends ChangeNotifier {
     return '#${color.value.toRadixString(16).padLeft(8, '0')}';
   }
 
-  Color hexToColor(String hex) {
-    hex = hex.replaceAll('#', '');
-
-    if (hex.length == 6) {
-      hex = 'ff$hex'; // add alpha if missing
-    }
-
-    return Color(int.parse(hex, radix: 16));
-  }
-
-  onDeleteCart(String id, {String? variantId}) async {
+  Future<String> onDeleteCart(String id, {String? variantId}) async {
     try {
       // cartItem.value!.products.removeWhere((e) => e.id == id);
       cartItem.value!.products.removeWhere((e) => e.id == id);
-      await ApiService().delete(
+      final response = await ApiService().delete(
         "${ApiEndpoints.cartItem}$id",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
+      return response.data['message'];
     } catch (e) {
       Logger.error("cart delete", e);
+      return "Something went wrong. Please try again";
     } finally {
       notifyListeners();
     }
@@ -282,11 +230,15 @@ class MarketplaceController extends ChangeNotifier {
     }
   }
 
-  void addBookmark(String id) async {
+  Future<String> addBookmark(String id) async {
     try {
-      await ApiService().post("${ApiEndpoints.addBookmark}/$id");
+      final response = await ApiService().post(
+        "${ApiEndpoints.addBookmark}/$id",
+      );
+      return response.data['data']['message'].toString();
     } catch (e) {
       Logger.error("add bookmark", e);
+      return 'Something went wrong';
     }
   }
 

@@ -1,29 +1,39 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
+import 'package:urock_media_movie_app/core/services/api_service.dart';
+import 'package:urock_media_movie_app/core/services/storage_service.dart';
+import 'package:urock_media_movie_app/features/chat/data/model/message_model.dart';
+import 'package:urock_media_movie_app/features/chat/data/repository/message_repo.dart';
 import '../../../core/utils/logger.dart';
 
 /// Controller for chat screen logic
 class ChatController extends ChangeNotifier {
-  List<Map<String, dynamic>> _messages = [];
+  List<MessageModel> _messages = [];
   bool _isLoading = false;
 
-  List<Map<String, dynamic>> get messages => _messages;
+  String chatId = "";
+  bool isMuted = false;
+
+  List<MessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
 
   /// Load chat messages
-  Future<void> loadMessages(String chatId) async {
+  Future<void> loadMessages() async {
     _isLoading = true;
     notifyListeners();
 
     try {
       Logger.info('Loading messages for chat: $chatId');
       // TODO: Implement actual API call
-      await Future.delayed(const Duration(seconds: 1));
-      
-      _messages = [];
-      _isLoading = false;
-      notifyListeners();
+
+      _messages = await MessageRepo.loadMessageRepo(chatId);
     } catch (e, stackTrace) {
       Logger.error('Failed to load messages', e, stackTrace);
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
@@ -33,13 +43,95 @@ class ChatController extends ChangeNotifier {
   Future<void> sendMessage(String text) async {
     Logger.info('Sending message: $text');
     // TODO: Implement send message functionality
+    final body = FormData.fromMap({
+      'data': jsonEncode({'text': text}),
+      'type': 'text',
+    });
+    await ApiService().post("${ApiEndpoints.sendMessage}$chatId", data: body);
+    _messages.insert(
+      0,
+      MessageModel.empty().copyWith(
+        text: text,
+        sender: MessageSenderModel(
+          id: StorageService.getUserData()!['id'],
+          name: "name",
+          email: "email",
+          image: "image",
+        ),
+      ),
+    );
+    // _messages.add(
+    // MessageModel(
+    //   text: text,
+    //   isMe: true,
+    //   tme: "1:17 PM",
+    //   profile:
+    //       "/image/e9f91bc1-6e50-446e-88f8-4ddae060dcee7643013136875769897-1768986348709.jpg",
+    // ),
+    // );
     notifyListeners();
   }
 
   /// Send image
-  Future<void> sendImage(String imagePath) async {
-    Logger.info('Sending image: $imagePath');
+  Future<void> sendImage(File image) async {
+    Logger.info('Sending image: ${image.path}');
     // TODO: Implement send image functionality
+    final body = FormData.fromMap({
+      'images': await MultipartFile.fromFile(image.path),
+      'type': 'image',
+    });
+    final response = await ApiService().post(
+      "${ApiEndpoints.sendMessage}$chatId",
+      data: body,
+    );
+    if (response.statusCode == 200) {
+      _messages.insert(
+        0,
+        MessageModel.empty().copyWith(
+          images: [(response.data['data']['images'] as List).first],
+          sender: MessageSenderModel(
+            id: StorageService.getUserData()!['id'],
+            name: "name",
+            email: "email",
+            image: "image",
+          ),
+        ),
+      );
+    }
+
     notifyListeners();
+  }
+
+  Future<bool> deleteChat() async {
+    try {
+      final response = await ApiService().delete(
+        "${ApiEndpoints.chatDelete}$chatId",
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      Logger.error("delete chat", e);
+      return false;
+    }
+  }
+
+  Future<void> muteChat() async {
+    try {
+      final response = await ApiService().patch(
+        "${ApiEndpoints.muteChat}$chatId",
+      );
+      if (response.statusCode == 200) {
+        isMuted = true;
+        notifyListeners();
+      }
+      isMuted = false;
+      notifyListeners();
+    } catch (e) {
+      Logger.error("mute chat", e);
+      isMuted = false;
+      notifyListeners();
+    }
   }
 }

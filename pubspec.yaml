@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^2.3.3
   get: ^4.6.6
   image_picker: ^1.2.1
+  open_file: ^3.5.11
+  file_picker: ^10.3.8
 
 dev_dependencies:
   flutter_test:

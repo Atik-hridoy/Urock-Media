@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
+import 'package:urock_media_movie_app/core/widgets/no_data.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/cart_item_card.dart';
@@ -86,7 +87,7 @@ class _CartScreenState extends State<CartScreen> {
             );
           }
           if (cart == null || cart.products.isEmpty) {
-            return Center(child: Text("No item found"));
+            return NoData(onPressed: () => _controller.onRefreshCart());
           }
           return Column(
             children: [
@@ -126,13 +127,17 @@ class _CartScreenState extends State<CartScreen> {
                             item.variantId,
                           );
                         },
-                        onRemove: () {
-                          cart.products.removeAt(index);
-                          setState(() {});
-                          _controller.onDeleteCart(
+                        onRemove: () async {
+                          setState(() {
+                            cart.products.removeAt(index);
+                          });
+                          final message = await _controller.onDeleteCart(
                             item.id,
                             variantId: item.variantId,
                           );
+                          ScaffoldMessenger.of(context)
+                            ..clearSnackBars()
+                            ..showSnackBar(SnackBar(content: Text(message)));
                         },
                       );
                     },

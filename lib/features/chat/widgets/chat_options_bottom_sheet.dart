@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/features/chat/logic/chat_controller.dart';
 
 /// Chat options bottom sheet
 class ChatOptionsBottomSheet extends StatelessWidget {
@@ -9,9 +10,7 @@ class ChatOptionsBottomSheet extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
         child: Column(
@@ -121,14 +120,15 @@ class ChatOptionsBottomSheet extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+              final isDeleted = await ChatController().deleteChat();
+              if (isDeleted) {
+                Navigator.pop(context);
+              }
               // TODO: Implement delete functionality
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

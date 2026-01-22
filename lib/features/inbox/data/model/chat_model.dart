@@ -1,14 +1,14 @@
 class ChatModel {
   final String id;
-  final List<dynamic> participants;
-  final dynamic lastMessage;
+  final List<ChatParticipantModel> participants;
+  final ChatMessageModel? lastMessage;
   final String status;
   final bool isDeleted;
-  final List<dynamic> readBy;
-  final List<dynamic> mutedBy;
+  final List<String> readBy;
+  final List<String> mutedBy;
   final List<dynamic> deletedByDetails;
   final DateTime? lastMessageAt;
-  final List<dynamic> blockedUsers;
+  final List<String> blockedUsers;
   final List<dynamic> userPinnedMessages;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -43,7 +43,57 @@ class ChatModel {
     required this.deletedAt,
   });
 
-  /// 🔥 Empty chat factory
+  factory ChatModel.fromJson(Map<String, dynamic> json) {
+    return ChatModel(
+      id: json['_id'] ?? '',
+      participants:
+          (json['participants'] as List<dynamic>?)
+              ?.map((e) => ChatParticipantModel.fromJson(e))
+              .toList() ??
+          [],
+      lastMessage: json['lastMessage'] != null
+          ? ChatMessageModel.fromJson(json['lastMessage'])
+          : null,
+      status: json['status'] ?? '',
+      isDeleted: json['isDeleted'] ?? false,
+      readBy:
+          (json['readBy'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      mutedBy:
+          (json['mutedBy'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      deletedByDetails: json['deletedByDetails'] ?? [],
+      lastMessageAt: json['lastMessageAt'] != null
+          ? DateTime.tryParse(json['lastMessageAt'])
+          : null,
+      blockedUsers:
+          (json['blockedUsers'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      userPinnedMessages: json['userPinnedMessages'] ?? [],
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
+      isRead: json['isRead'] ?? false,
+      unreadCount: json['unreadCount'] ?? 0,
+      iconUnreadCount: json['iconUnreadCount'] ?? 0,
+      isMuted: json['isMuted'] ?? false,
+      isBlocked: json['isBlocked'] ?? false,
+      wasDeletedByUser: json['wasDeletedByUser'] ?? false,
+      deletedAt: json['deletedAt'] != null
+          ? DateTime.tryParse(json['deletedAt'])
+          : null,
+    );
+  }
+
   factory ChatModel.empty() {
     return ChatModel(
       id: '',
@@ -59,7 +109,7 @@ class ChatModel {
       userPinnedMessages: [],
       createdAt: null,
       updatedAt: null,
-      isRead: true,
+      isRead: false,
       unreadCount: 0,
       iconUnreadCount: 0,
       isMuted: false,
@@ -68,36 +118,33 @@ class ChatModel {
       deletedAt: null,
     );
   }
+}
 
-  factory ChatModel.fromJson(Map<String, dynamic>? json) {
-    if (json == null) return ChatModel.empty();
+class ChatParticipantModel {
+  final String id;
+  final String name;
+  final String email;
+  final String image;
 
-    return ChatModel(
+  ChatParticipantModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.image,
+  });
+
+  factory ChatParticipantModel.fromJson(Map<String, dynamic> json) {
+    return ChatParticipantModel(
       id: json['_id'] ?? '',
-      participants: (json['participants'] as List?) ?? [],
-      lastMessage: json['lastMessage'],
-      status: json['status'] ?? '',
-      isDeleted: json['isDeleted'] ?? false,
-      readBy: (json['readBy'] as List?) ?? [],
-      mutedBy: (json['mutedBy'] as List?) ?? [],
-      deletedByDetails: (json['deletedByDetails'] as List?) ?? [],
-      lastMessageAt: _parseDate(json['lastMessageAt']),
-      blockedUsers: (json['blockedUsers'] as List?) ?? [],
-      userPinnedMessages: (json['userPinnedMessages'] as List?) ?? [],
-      createdAt: _parseDate(json['createdAt']),
-      updatedAt: _parseDate(json['updatedAt']),
-      isRead: json['isRead'] ?? true,
-      unreadCount: json['unreadCount'] ?? 0,
-      iconUnreadCount: json['iconUnreadCount'] ?? 0,
-      isMuted: json['isMuted'] ?? false,
-      isBlocked: json['isBlocked'] ?? false,
-      wasDeletedByUser: json['wasDeletedByUser'] ?? false,
-      deletedAt: _parseDate(json['deletedAt']),
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      image: json['image'] ?? '',
     );
   }
 
-  /// 🔥 Determines if chat should be skipped
-  bool get isEmpty => id.isEmpty || participants.isEmpty && lastMessage == null;
+  factory ChatParticipantModel.empty() {
+    return ChatParticipantModel(id: '', name: '', email: '', image: '');
+  }
 }
 
 class ChatResponseModel {
@@ -113,6 +160,19 @@ class ChatResponseModel {
     required this.totalIconUnreadMessages,
   });
 
+  factory ChatResponseModel.fromJson(Map<String, dynamic> json) {
+    return ChatResponseModel(
+      chats:
+          (json['chats'] as List<dynamic>?)
+              ?.map((e) => ChatModel.fromJson(e))
+              .toList() ??
+          [],
+      unreadChatsCount: json['unreadChatsCount'] ?? 0,
+      totalUnreadMessages: json['totalUnreadMessages'] ?? 0,
+      totalIconUnreadMessages: json['totalIconUnreadMessages'] ?? 0,
+    );
+  }
+
   factory ChatResponseModel.empty() {
     return ChatResponseModel(
       chats: [],
@@ -121,32 +181,12 @@ class ChatResponseModel {
       totalIconUnreadMessages: 0,
     );
   }
-
-  factory ChatResponseModel.fromJson(Map<String, dynamic>? json) {
-    if (json == null) return ChatResponseModel.empty();
-
-    final rawChats = (json['chats'] as List?) ?? [];
-
-    /// 🔥 Skip invalid / empty chats here
-    final chats = rawChats
-        .map((e) => ChatModel.fromJson(e))
-        .where((chat) => !chat.isEmpty)
-        .toList();
-
-    return ChatResponseModel(
-      chats: chats,
-      unreadChatsCount: json['unreadChatsCount'] ?? 0,
-      totalUnreadMessages: json['totalUnreadMessages'] ?? 0,
-      totalIconUnreadMessages: json['totalIconUnreadMessages'] ?? 0,
-    );
-  }
 }
 
-DateTime? _parseDate(dynamic value) {
-  if (value == null) return null;
-  try {
-    return DateTime.parse(value.toString());
-  } catch (_) {
-    return null;
+class ChatMessageModel {
+  ChatMessageModel();
+
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    return ChatMessageModel();
   }
 }

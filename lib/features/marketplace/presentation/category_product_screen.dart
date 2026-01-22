@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/core/constants/app_colors.dart';
+import 'package:urock_media_movie_app/core/widgets/no_data.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/category_product_controller.dart';
+import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import 'package:urock_media_movie_app/features/marketplace/widgets/product_card.dart';
 
 class CategoryProductScreen extends StatefulWidget {
@@ -58,15 +60,15 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             );
           }
           if (_controller.categoryProduct.isEmpty) {
-            return Center(child: Text("No item found"));
+            return NoData(onPressed: () => _controller.onRefresh(widget.id));
           }
           return Padding(
             padding: const EdgeInsets.all(16),
             child: GridView.builder(
               itemCount: _controller.categoryProduct.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // ✅ 2 columns
-                childAspectRatio: 0.68, // ✅ realistic product card ratio
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
@@ -82,11 +84,16 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
                       : "",
                   id: item.id,
                   isBookedmark: item.isBookmarked,
-                  onAddBookmark: () {
+                  onAddBookmark: () async {
                     setState(() {
                       item.isBookmarked = !item.isBookmarked;
                     });
-                    _controller.addBookmark(item.id);
+                    final message = await MarketplaceController().addBookmark(
+                      item.id,
+                    );
+                    ScaffoldMessenger.of(context)
+                      ..clearSnackBars()
+                      ..showSnackBar(SnackBar(content: Text(message)));
                   },
                 );
               },

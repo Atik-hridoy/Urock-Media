@@ -160,37 +160,39 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   ),
                 ),
                 // Categories
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: const Text(
-                    'Categories',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                if (_controller.categories.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: const Text(
+                      'Categories',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 100,
-                  child: ListView.builder(
-                    controller: _scrollController[0],
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _controller.categories.length,
-                    itemBuilder: (context, index) {
-                      final item = _controller.categories[index];
-                      return CategoryIcon(
-                        name: item.name,
-                        id: item.id,
-                        icon: "${ApiConfig.imageUrl}${item.image}",
-                      );
-                    },
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      controller: _scrollController[0],
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _controller.categories.length,
+                      itemBuilder: (context, index) {
+                        final item = _controller.categories[index];
+                        return CategoryIcon(
+                          name: item.name,
+                          id: item.id,
+                          icon: "${ApiConfig.imageUrl}${item.image}",
+                        );
+                      },
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
+                ],
                 // Feature Products
                 _buildProductSection(
                   'Feature Products',
@@ -284,11 +286,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                             ? ""
                             : ApiConfig.imageUrl + item.images.first,
                         isBookedmark: item.isBookmarked,
-                        onAddBookmark: () {
+                        onAddBookmark: () async {
                           setState(() {
                             item.isBookmarked = !item.isBookmarked;
                           });
-                          _controller.addBookmark(item.id);
+                          final message = await _controller.addBookmark(
+                            item.id,
+                          );
+                          ScaffoldMessenger.of(context)
+                            ..clearSnackBars()
+                            ..showSnackBar(SnackBar(content: Text(message)));
                         },
                       ),
                     );

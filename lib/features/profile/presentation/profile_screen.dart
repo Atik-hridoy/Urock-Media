@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
+import 'package:urock_media_movie_app/core/services/storage_service.dart';
 import 'package:urock_media_movie_app/features/profile/logic/profile_controller.dart';
+import 'package:urock_media_movie_app/routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../home/widgets/bottom_nav_bar.dart';
 import '../widgets/profile_menu_item.dart';
@@ -317,6 +319,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        StorageService.removeToken();
+                        Navigator.of(context).pushNamed(AppRoutes.auth);
                         // TODO: Implement logout functionality
                       },
                       style: ElevatedButton.styleFrom(

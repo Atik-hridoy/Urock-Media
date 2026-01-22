@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/core/config/api_config.dart';
+import 'package:urock_media_movie_app/core/widgets/no_data.dart';
 import 'package:urock_media_movie_app/features/inbox/logic/inbox_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/message_list_item.dart';
@@ -17,74 +19,82 @@ class _InboxScreenState extends State<InboxScreen> {
   int _selectedNavIndex = 1; // Inbox is at index 1
 
   // Mock messages data
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'name': 'Cody Fisher',
-      'message': 'typing...',
-      'time': '2d',
-      'avatar': 'CF',
-      'unreadCount': 0,
-      'isTyping': true,
-    },
-    {
-      'name': 'Electronics Deal Hunt',
-      'message': 'Check out this amazing laptop deal!',
-      'time': '1h',
-      'avatar': 'ED',
-      'unreadCount': 8,
-      'isTyping': false,
-    },
-    {
-      'name': 'Michael Chen',
-      'message': 'Thanks for the recommendation!',
-      'time': '2h',
-      'avatar': 'MC',
-      'unreadCount': 0,
-      'isTyping': false,
-    },
-    {
-      'name': 'Fashion Squad',
-      'message': 'Emma: New arrivals are amazing!',
-      'time': '5h',
-      'avatar': 'FS',
-      'unreadCount': 12,
-      'isTyping': false,
-    },
-    {
-      'name': 'Jessica Martir',
-      'message': 'See you at the sale tomorrow!',
-      'time': '2d',
-      'avatar': 'JM',
-      'unreadCount': 0,
-      'isTyping': false,
-    },
-    {
-      'name': 'Albert Flores',
-      'message': 'See you at the sale tomorrow!',
-      'time': '2d',
-      'avatar': 'AF',
-      'unreadCount': 0,
-      'isTyping': false,
-    },
-    {
-      'name': 'Marvin McKini',
-      'message': 'Mike: Check out this amazing laptop deal!',
-      'time': '2d',
-      'avatar': 'MM',
-      'unreadCount': 0,
-      'isTyping': false,
-    },
-    {
-      'name': 'Theresa Webb',
-      'message': '',
-      'time': '2d',
-      'avatar': 'TW',
-      'unreadCount': 0,
-      'isTyping': false,
-    },
-  ];
+  // final List<Map<String, dynamic>> _messages = [
+  //   {
+  //     'name': 'Cody Fisher',
+  //     'message': 'typing...',
+  //     'time': '2d',
+  //     'avatar': 'CF',
+  //     'unreadCount': 0,
+  //     'isTyping': true,
+  //   },
+  //   {
+  //     'name': 'Electronics Deal Hunt',
+  //     'message': 'Check out this amazing laptop deal!',
+  //     'time': '1h',
+  //     'avatar': 'ED',
+  //     'unreadCount': 8,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Michael Chen',
+  //     'message': 'Thanks for the recommendation!',
+  //     'time': '2h',
+  //     'avatar': 'MC',
+  //     'unreadCount': 0,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Fashion Squad',
+  //     'message': 'Emma: New arrivals are amazing!',
+  //     'time': '5h',
+  //     'avatar': 'FS',
+  //     'unreadCount': 12,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Jessica Martir',
+  //     'message': 'See you at the sale tomorrow!',
+  //     'time': '2d',
+  //     'avatar': 'JM',
+  //     'unreadCount': 0,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Albert Flores',
+  //     'message': 'See you at the sale tomorrow!',
+  //     'time': '2d',
+  //     'avatar': 'AF',
+  //     'unreadCount': 0,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Marvin McKini',
+  //     'message': 'Mike: Check out this amazing laptop deal!',
+  //     'time': '2d',
+  //     'avatar': 'MM',
+  //     'unreadCount': 0,
+  //     'isTyping': false,
+  //   },
+  //   {
+  //     'name': 'Theresa Webb',
+  //     'message': '',
+  //     'time': '2d',
+  //     'avatar': 'TW',
+  //     'unreadCount': 0,
+  //     'isTyping': false,
+  //   },
+  // ];
 
   final _controller = InboxController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller.loadMessages();
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -115,6 +125,20 @@ class _InboxScreenState extends State<InboxScreen> {
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
+          if (_controller.isLoading) {
+            return Center(
+              child: CircularProgressIndicator.adaptive(
+                backgroundColor: AppColors.white,
+              ),
+            );
+          }
+          final inbox = _controller.messages;
+          if (inbox.isEmpty) {
+            return NoData(
+              onPressed: () => _controller.loadMessages(),
+              text: "Inbox is empty",
+            );
+          }
           return Column(
             children: [
               // Search bar
@@ -151,16 +175,19 @@ class _InboxScreenState extends State<InboxScreen> {
               // Messages list
               Expanded(
                 child: ListView.builder(
-                  itemCount: _messages.length,
+                  itemCount: inbox.length,
                   itemBuilder: (context, index) {
-                    final message = _messages[index];
                     return MessageListItem(
-                      name: message['name'],
-                      message: message['message'],
-                      time: message['time'],
-                      avatar: message['avatar'],
-                      unreadCount: message['unreadCount'],
-                      isTyping: message['isTyping'],
+                      name: inbox[index].participants.first.name,
+                      message: "",
+                      time: _controller.timeAgoShort(
+                        inbox[index].lastMessageAt,
+                      ),
+                      avatar:
+                          "${ApiConfig.imageUrl}${inbox[index].participants.first.image}",
+                      unreadCount: inbox[index].unreadCount,
+                      isTyping: false,
+                      chatId: inbox[index].id,
                     );
                   },
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/core/constants/app_sizes.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Message list item widget
@@ -9,6 +10,7 @@ class MessageListItem extends StatelessWidget {
   final String avatar;
   final int unreadCount;
   final bool isTyping;
+  final String chatId;
 
   const MessageListItem({
     super.key,
@@ -18,6 +20,7 @@ class MessageListItem extends StatelessWidget {
     required this.avatar,
     this.unreadCount = 0,
     this.isTyping = false,
+    required this.chatId,
   });
 
   @override
@@ -26,10 +29,7 @@ class MessageListItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).pushNamed(
           '/chat',
-          arguments: {
-            'name': name,
-            'avatar': avatar,
-          },
+          arguments: {'name': name, 'avatar': avatar, 'chatId': chatId},
         );
       },
       child: Container(
@@ -37,15 +37,25 @@ class MessageListItem extends StatelessWidget {
         child: Row(
           children: [
             // Avatar
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: _getAvatarColor(),
-              child: Text(
-                avatar,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            SizedBox(
+              width: AppSizes.iconXL,
+              height: AppSizes.iconXL,
+              child: ClipOval(
+                child: Image.network(
+                  avatar,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => CircleAvatar(
+                    radius: 28,
+                    backgroundColor: _getAvatarColor(),
+                    child: Text(
+                      "A",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -86,7 +96,9 @@ class MessageListItem extends StatelessWidget {
                                 ? AppColors.goldLight
                                 : Colors.white.withOpacity(0.7),
                             fontSize: 14,
-                            fontStyle: isTyping ? FontStyle.italic : FontStyle.normal,
+                            fontStyle: isTyping
+                                ? FontStyle.italic
+                                : FontStyle.normal,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

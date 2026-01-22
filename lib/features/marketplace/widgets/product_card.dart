@@ -58,6 +58,8 @@ class ProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         image,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
                         errorBuilder: (context, error, stackTrace) => Icon(
                           Icons.checkroom,
                           size: 50,

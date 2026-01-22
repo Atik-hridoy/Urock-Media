@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
+import 'package:urock_media_movie_app/features/marketplace/logic/product_details_controller.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// Product details screen
@@ -27,7 +28,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   ];
 
   final List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL'];
-  final _controller = MarketplaceController();
+  final _controller = ProductDetailsController();
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -46,17 +47,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   //   }
   // }
   double get price {
-    final item = _controller.singleProduct.value;
-    final double price = item == null
-        ? 0.0
-        : item.productType == 'simple'
+    final item = _controller.singleProduct;
+    final double price = item.productType == 'simple'
         ? item.price
         : (item.variants.isNotEmpty && _selectedSizeIndex < item.variants.length
-              ? _controller
-                    .singleProduct
-                    .value!
-                    .variants[_selectedSizeIndex]
-                    .price
+              ? _controller.singleProduct.variants[_selectedSizeIndex].price
               : item.minPrice);
     return price;
   }
@@ -85,10 +80,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          final item = _controller.singleProduct.value;
-          if (item == null) {
-            return Container();
+          if (_controller.isLoading) {
+            return Center(
+              child: CircularProgressIndicator.adaptive(
+                backgroundColor: AppColors.white,
+              ),
+            );
           }
+          final item = _controller.singleProduct;
           return Column(
             children: [
               Expanded(
@@ -143,11 +142,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 top: 16,
                                 right: 16,
                                 child: GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
                                     setState(() {
                                       item.isBookmarked = !item.isBookmarked;
                                     });
-                                    _controller.addBookmark(item.id);
+                                    final message =
+                                        await MarketplaceController()
+                                            .addBookmark(item.id);
+                                    ScaffoldMessenger.of(context)
+                                      ..clearSnackBars()
+                                      ..showSnackBar(
+                                        SnackBar(content: Text(message)),
+                                      );
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
@@ -170,53 +176,57 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                       ),
                       // Thumbnail Images
-                      SizedBox(
-                        height: 80,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: item.images.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedImageIndex = index;
-                                });
-                              },
-                              child: Container(
-                                width: 70,
-                                margin: EdgeInsets.only(
-                                  right: index < 3 ? 12 : 0,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.grey[700]!,
-                                      Colors.grey[900]!,
-                                    ],
+                      if (item.images.isNotEmpty) ...[
+                        SizedBox(
+                          height: 80,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: item.images.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedImageIndex = index;
+                                  });
+                                },
+                                child: Container(
+                                  width: 70,
+                                  margin: EdgeInsets.only(
+                                    right: index < 3 ? 12 : 0,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.grey[700]!,
+                                        Colors.grey[900]!,
+                                      ],
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      "${ApiConfig.imageUrl}${item.images[index]}",
+                                      errorBuilder:
+                                          (context, error, stackTrace) => Icon(
+                                            Icons.checkroom,
+                                            size: 50,
+                                            color: Colors.white.withOpacity(
+                                              0.3,
+                                            ),
+                                          ),
+                                    ),
                                   ),
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    "${ApiConfig.imageUrl}${item.images[index]}",
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Icon(
-                                          Icons.checkroom,
-                                          size: 50,
-                                          color: Colors.white.withOpacity(0.3),
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
+                      ],
                       // Product Name and Price
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -529,15 +539,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           onPressed: () async {
                             if (await _controller.addToCart(
                               index: _selectedSizeIndex,
-                              color: item
-                                  .variantTypes
-                                  .last
-                                  .options[_selectedColorIndex]
+                              color: item.variantTypes
+                                  .firstWhereOrNull((e) => e.name == "Color")
+                                  ?.options[_selectedColorIndex]
                                   .name,
-                              size: item
-                                  .variantTypes
-                                  .first
-                                  .options[_selectedSizeIndex]
+                              size: item.variantTypes
+                                  .firstWhereOrNull((e) => e.name == "Size")
+                                  ?.options[_selectedSizeIndex]
                                   .name,
                             )) {
                               ScaffoldMessenger.of(context)
@@ -551,7 +559,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ScaffoldMessenger.of(context)
                                 ..clearSnackBars()
                                 ..showSnackBar(
-                                  SnackBar(content: Text("Failed to cart")),
+                                  SnackBar(content: Text("Failed to add cart")),
                                 );
                             }
                             // Navigator.of(context).pushNamed('/cart');
@@ -567,8 +575,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          child: const Text(
-                            'Add to Cart',
+                          child: Text(
+                            _controller.isLoadingCart
+                                ? 'Adding to cart...'
+                                : 'Add to Cart',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

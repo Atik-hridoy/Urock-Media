@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
-import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/core/utils/logger.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/product_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/repository/product_repository.dart';
@@ -24,6 +22,7 @@ class CategoryProductController extends ChangeNotifier {
         page,
         categoryId: id,
       );
+
       if (product.isEmpty || product.length < 10) {
         hasMore = false;
       }
@@ -36,14 +35,6 @@ class CategoryProductController extends ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
-    }
-  }
-
-  void addBookmark(String id) async {
-    try {
-      await ApiService().post("${ApiEndpoints.addBookmark}/$id");
-    } catch (e) {
-      Logger.error("add bookmark", e);
     }
   }
 

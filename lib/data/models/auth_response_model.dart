@@ -35,7 +35,7 @@ class AuthResponseModel {
 
 /// User Data Model
 class UserData {
-  final int? id;
+  final String? id;
   final String? name;
   final String? email;
   final String? phone;
@@ -53,7 +53,7 @@ class UserData {
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
-      id: json['id'],
+      id: json['_id'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],

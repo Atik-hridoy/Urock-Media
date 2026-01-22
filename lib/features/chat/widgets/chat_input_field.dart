@@ -5,11 +5,13 @@ import '../../../core/constants/app_colors.dart';
 class ChatInputField extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
+  final VoidCallback onSendImage;
 
   const ChatInputField({
     super.key,
     required this.controller,
     required this.onSend,
+    required this.onSendImage,
   });
 
   @override
@@ -19,36 +21,21 @@ class ChatInputField extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.background,
         border: Border(
-          top: BorderSide(
-            color: Colors.white.withOpacity(0.1),
-            width: 1,
-          ),
+          top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
         ),
       ),
       child: SafeArea(
         child: Row(
           children: [
-            // Attachment button
-            IconButton(
-              icon: Icon(
-                Icons.attach_file,
-                color: Colors.white.withOpacity(0.7),
-              ),
-              onPressed: () {
-                // TODO: Handle attachment
-              },
-            ),
             // Image button
             IconButton(
               icon: Icon(
                 Icons.image_outlined,
                 color: Colors.white.withOpacity(0.7),
               ),
-              onPressed: () {
-                // TODO: Handle image
-              },
+              onPressed: onSendImage,
             ),
-            const SizedBox(width: 8),
+            // const SizedBox(width: 8),
             // Text input
             Expanded(
               child: Container(
@@ -83,11 +70,7 @@ class ChatInputField extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: const Icon(
-                  Icons.send,
-                  color: Colors.black,
-                  size: 20,
-                ),
+                icon: const Icon(Icons.send, color: Colors.black, size: 20),
                 onPressed: onSend,
               ),
             ),

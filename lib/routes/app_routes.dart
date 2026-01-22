@@ -130,6 +130,7 @@ class AppRoutes {
           builder: (_) => ChatScreen(
             name: args['name'] ?? 'Unknown',
             avatar: args['avatar'] ?? 'U',
+            chatId: args['chatId'] as String,
           ),
           settings: settings,
         );
