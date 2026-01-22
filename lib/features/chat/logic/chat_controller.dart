@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
 import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/core/services/storage_service.dart';
@@ -99,6 +100,13 @@ class ChatController extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  String formatTime(DateTime? dateTime) {
+    if (dateTime == null) {
+      return DateFormat('h:mm a').format(DateTime.now());
+    }
+    return DateFormat('h:mm a').format(dateTime);
   }
 
   Future<bool> deleteChat(String chatId) async {

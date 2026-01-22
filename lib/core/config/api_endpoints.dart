@@ -97,6 +97,7 @@ class ApiEndpoints {
   static const String cartItem = "/cart/item/";
   static const String category = "/categories/";
   static const String addBookmark = "/bookmarks";
+  static const String checkOut = "/orders/create-checkout-session";
 
   // ==================== Inbox ========================
   static const String chat = "/chats/";

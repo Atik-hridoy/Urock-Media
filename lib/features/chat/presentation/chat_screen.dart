@@ -5,7 +5,6 @@ import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/core/constants/app_sizes.dart';
 import 'package:urock_media_movie_app/core/services/storage_service.dart';
 import 'package:urock_media_movie_app/features/chat/logic/chat_controller.dart';
-import 'package:urock_media_movie_app/features/inbox/logic/inbox_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
@@ -39,44 +38,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
-  // Mock chat messages
-  // final List<Map<String, dynamic>> _messages = [
-  //   {
-  //     'text': 'Hey everyone! Found an amazing deal on laptops',
-  //     'isMe': false,
-  //     'time': '1:13 PM',
-  //     'avatar': 'P',
-  //   },
-  //   {'text': 'What\'s the deal?', 'isMe': true, 'time': '1:13 PM'},
-  //   {'image': 'laptop_image', 'isMe': false, 'time': '1:14 PM', 'avatar': 'P'},
-  //   {
-  //     'text': 'Emma: That\'s an insane price!',
-  //     'isMe': false,
-  //     'time': '1:15 PM',
-  //     'avatar': 'E',
-  //   },
-  //   {'text': 'Wow! 40% off?! 😍', 'isMe': true, 'time': '1:15 PM'},
-  //   {
-  //     'text': 'Mike: Right? It\'s normally \$2199',
-  //     'isMe': false,
-  //     'time': '1:16 PM',
-  //     'avatar': 'M',
-  //   },
-  //   {
-  //     'text': 'James: Just grabbed one!\nThanks Mike!',
-  //     'isMe': false,
-  //     'time': '1:17 PM',
-  //     'avatar': 'J',
-  //   },
-  //   {'text': 'How long is this deal valid?', 'isMe': true, 'time': '1:18 PM'},
-  //   {
-  //     'text': 'Mike: Until midnight tonight. Only 15 left in stock!',
-  //     'isMe': false,
-  //     'time': '1:18 PM',
-  //     'avatar': 'M',
-  //   },
-  // ];
 
   final _controller = ChatController();
 
@@ -212,15 +173,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.all(16),
                   itemCount: allMessage.length,
                   itemBuilder: (context, index) {
-                    print("my id: ${StorageService.getUserData()}");
                     return ChatMessageBubble(
                       text: allMessage[index].text,
                       isMe:
                           allMessage[index].sender.id ==
                           StorageService.getUserData()!['id'],
-                      time: InboxController().timeAgoShort(
-                        allMessage[index].createdAt,
-                      ),
+                      time: _controller.formatTime(allMessage[index].createdAt),
+
                       avatar:
                           "${ApiConfig.imageUrl}${allMessage[index].sender.image}",
                       image: allMessage[index].images.isNotEmpty
