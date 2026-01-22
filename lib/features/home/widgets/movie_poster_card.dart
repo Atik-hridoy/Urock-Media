@@ -18,8 +18,6 @@ class MoviePosterCard extends StatelessWidget {
     
     return GestureDetector(
       onTap: () {
-        debugPrint('🎬 Card tapped - Movie: ${movie.title}, ID: ${movie.id}');
-        
         if (isSeries) {
           Navigator.of(context).pushNamed('/series-details', arguments: movie);
         } else {
@@ -67,8 +65,6 @@ class MoviePosterCard extends StatelessWidget {
                     );
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    debugPrint('❌ Failed to load image: $imageUrl');
-                    debugPrint('   Error: $error');
                     return _buildPlaceholder();
                   },
                 )

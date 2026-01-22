@@ -1,6 +1,9 @@
+import '../../../core/config/api_config.dart';
+
 /// Movie data model
 class Movie {
   final int id;
+  final String? mongoId; // Added for MongoDB _id
   final String title;
   final String? overview;
   final String? posterPath;
@@ -18,6 +21,7 @@ class Movie {
 
   Movie({
     required this.id,
+    this.mongoId, // Added
     required this.title,
     this.overview,
     this.posterPath,
@@ -41,6 +45,9 @@ class Movie {
       // ID: Handle both 'id' and '_id'
       id: json['id'] as int? ?? 
           (json['_id'] != null ? json['_id'].hashCode : 0),
+      
+      // MongoDB _id as string
+      mongoId: json['_id'] as String?,
       
       // Title
       title: json['title'] as String? ?? 'Unknown',
@@ -90,6 +97,7 @@ class Movie {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      '_id': mongoId,
       'title': title,
       'overview': overview,
       'poster_path': posterPath,
@@ -118,8 +126,7 @@ class Movie {
     
     // If it's a relative path from your backend (starts with /)
     if (posterPath!.startsWith('/')) {
-      // Use your backend base URL
-      return 'http://10.10.7.41:5001$posterPath';
+      return '${ApiConfig.imageUrl}$posterPath';
     }
     
     // Otherwise assume it's TMDB format
@@ -137,8 +144,7 @@ class Movie {
     
     // If it's a relative path from your backend (starts with /)
     if (backdropPath!.startsWith('/')) {
-      // Use your backend base URL
-      return 'http://10.10.7.41:5001$backdropPath';
+      return '${ApiConfig.imageUrl}$backdropPath';
     }
     
     // Otherwise assume it's TMDB format
@@ -156,8 +162,7 @@ class Movie {
     
     // If it's a relative path from your backend (starts with /)
     if (trailerPath!.startsWith('/')) {
-      // Use your backend base URL
-      return 'http://10.10.7.41:5001$trailerPath';
+      return '${ApiConfig.imageUrl}$trailerPath';
     }
     
     // Otherwise return as is
@@ -179,6 +184,7 @@ class Movie {
   /// Copy with method for immutability
   Movie copyWith({
     int? id,
+    String? mongoId,
     String? title,
     String? overview,
     String? posterPath,
@@ -196,6 +202,7 @@ class Movie {
   }) {
     return Movie(
       id: id ?? this.id,
+      mongoId: mongoId ?? this.mongoId,
       title: title ?? this.title,
       overview: overview ?? this.overview,
       posterPath: posterPath ?? this.posterPath,

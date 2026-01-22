@@ -39,11 +39,8 @@ class _MovieBackdropHeaderState extends State<MovieBackdropHeader> {
     final videoUrl = widget.trailerUrl;
     
     if (videoUrl == null || videoUrl.isEmpty) {
-      debugPrint('⚠️ No trailer URL provided');
       return;
     }
-    
-    debugPrint('🎬 Initializing trailer video: $videoUrl');
     
     _videoController = VideoPlayerController.networkUrl(
       Uri.parse(videoUrl),
@@ -52,10 +49,8 @@ class _MovieBackdropHeaderState extends State<MovieBackdropHeader> {
           setState(() {
             _isInitialized = true;
           });
-          debugPrint('✅ Trailer video initialized successfully');
         }
       }).catchError((error) {
-        debugPrint('❌ Failed to initialize trailer: $error');
         if (mounted) {
           setState(() {
             _isInitialized = false;

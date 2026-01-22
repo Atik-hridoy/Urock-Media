@@ -35,12 +35,15 @@ class ApiEndpoints {
   static const String movieTrailers = '/movies/{id}/trailers';
   static const String movieCast = '/movies/{id}/cast';
   static const String similarMovies = '/movies/{id}/similar';
+  static const String relatedMovies = '/movies/related/{id}'; // Added for related movies
   static const String recommendedMovies = '/movies/{id}/recommendations';
 
   // ==================== TV Shows ====================
   static const String tvShows = '/tv-shows';
   static const String tvShowDetails = '/tv-shows/{id}';
   static const String popularTvShows = '/tv-shows/popular';
+  static const String popularSeries = '/series/popular'; // Added for your backend
+  static const String seriesDetails = '/series/{id}'; // Added for series details
   static const String trendingTvShows = '/tv-shows/trending';
   static const String topRatedTvShows = '/tv-shows/top-rated';
   static const String onTheAirTvShows = '/tv-shows/on-the-air';
@@ -149,6 +152,11 @@ class ApiEndpoints {
     return replaceParams(similarMovies, {'id': movieId});
   }
 
+  /// Get related movies endpoint with ID
+  static String getRelatedMovies(String movieId) {
+    return replaceParams(relatedMovies, {'id': movieId});
+  }
+
   /// Get recommended movies endpoint with ID
   static String getRecommendedMovies(int movieId) {
     return replaceParams(recommendedMovies, {'id': movieId});
@@ -170,5 +178,10 @@ class ApiEndpoints {
       'id': tvShowId,
       'seasonNumber': seasonNumber,
     });
+  }
+
+  /// Get series details endpoint with ID
+  static String getSeriesDetails(String seriesId) {
+    return replaceParams(seriesDetails, {'id': seriesId});
   }
 }

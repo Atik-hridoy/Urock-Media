@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/utils/responsive_scale.dart';
-import 'presentation/series_details_screen.dart';
+import 'presentation/series_details_screen_api.dart';
 import '../home/data/movie_model.dart';
 
 /// Entry widget that routes to series-specific details screen
@@ -13,8 +13,7 @@ class SeriesDetailsEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     ResponsiveScale.init(context);
 
-    // For now, use the same series details screen for all device types
-    // Can be extended to have phone/tablet specific layouts if needed
-    return SeriesDetailsScreen(series: series);
+    // Use API-integrated series details screen
+    return SeriesDetailsScreenApi(series: series);
   }
 }

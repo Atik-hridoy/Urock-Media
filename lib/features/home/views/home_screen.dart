@@ -156,7 +156,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           const SizedBox(height: 24),
           MovieSection(
             title: 'Popular Series',
-            movies: _controller.trendingMovies,
+            movies: _controller.popularSeries, // API data
+            isSeries: true,
           ),
           const SizedBox(height: 24),
           MovieSection(
@@ -170,14 +171,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildMoviesTab(ScrollController scrollController) {
-    // Debug: Check if popular movies data exists
-    debugPrint('🎬 Movies Tab - Popular Movies Count: ${_controller.popularMovies.length}');
-    if (_controller.popularMovies.isNotEmpty) {
-      debugPrint('🎬 First Popular Movie: ${_controller.popularMovies.first.title}');
-    } else {
-      debugPrint('⚠️ Popular Movies list is EMPTY!');
-    }
-    
     return SingleChildScrollView(
       controller: scrollController,
       child: Column(
@@ -189,15 +182,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 : null,
           ),
           const SizedBox(height: 24),
-          // Popular Movies Section
-          Builder(
-            builder: (context) {
-              debugPrint('🎬 Building Popular Movies Section with ${_controller.popularMovies.length} movies');
-              return MovieSection(
-                title: 'Popular Movies',
-                movies: _controller.popularMovies,
-              );
-            },
+          MovieSection(
+            title: 'Popular Movies',
+            movies: _controller.popularMovies,
           ),
           const SizedBox(height: 24),
           MovieSection(
@@ -228,14 +215,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 24),
           MovieSection(
-            title: 'Trending Series',
-            movies: _controller.trendingMovies,
+            title: 'Popular Series',
+            movies: _controller.popularSeries,
             isSeries: true,
           ),
           const SizedBox(height: 24),
           MovieSection(
-            title: 'Popular Series',
-            movies: _controller.popularMovies,
+            title: 'Trending Series',
+            movies: _controller.trendingMovies,
             isSeries: true,
           ),
           const SizedBox(height: 24),
