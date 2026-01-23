@@ -113,22 +113,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             children: [
                               SizedBox(
                                 width: double.infinity,
+                                height: double.infinity,
                                 child: item.images.isNotEmpty
-                                    ? SingleChildScrollView(
-                                        child: Image.network(
-                                          "${ApiConfig.imageUrl}${item.images[_selectedImageIndex]}",
-                                          fit: BoxFit.cover,
-
-                                          // width: double.infinity,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Icon(
-                                                    Icons.checkroom,
-                                                    size: 100,
-                                                    color: Colors.white
-                                                        .withOpacity(0.3),
-                                                  ),
-                                        ),
+                                    ? Image.network(
+                                        "${ApiConfig.imageUrl}${item.images[_selectedImageIndex]}",
+                                        fit: BoxFit.cover,
+                                        // width: double.infinity,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Icon(
+                                                  Icons.checkroom,
+                                                  size: 100,
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
+                                                ),
                                       )
                                     : Center(
                                         child: Icon(
@@ -210,6 +208,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
                                       "${ApiConfig.imageUrl}${item.images[index]}",
+                                      fit: BoxFit.cover,
                                       errorBuilder:
                                           (context, error, stackTrace) => Icon(
                                             Icons.checkroom,
