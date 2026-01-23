@@ -22,12 +22,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     (index) => ScrollController(),
   ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
-  final List<Map<String, dynamic>> categories = [
-    {'name': 'Clothing', 'icon': Icons.checkroom},
-    {'name': 'Electronics', 'icon': Icons.devices},
-    {'name': 'Home Appliances', 'icon': Icons.kitchen},
-    {'name': 'Clothing', 'icon': Icons.chair},
-  ];
+  // final List<Map<String, dynamic>> categories = [
+  //   {'name': 'Clothing', 'icon': Icons.checkroom},
+  //   {'name': 'Electronics', 'icon': Icons.devices},
+  //   {'name': 'Home Appliances', 'icon': Icons.kitchen},
+  //   {'name': 'Clothing', 'icon': Icons.chair},
+  // ];
   final _controller = MarketplaceController();
 
   @override
@@ -71,6 +71,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     _scrollController[2].dispose();
     _scrollController[3].dispose();
     _scrollController[1].dispose();
+    _scrollController[0].dispose();
   }
 
   @override

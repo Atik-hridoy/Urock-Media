@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/core/widgets/no_data.dart';
 import 'package:urock_media_movie_app/features/profile/logic/profile_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/faq_item.dart';
@@ -81,14 +82,29 @@ class _FaqScreenState extends State<FaqScreen> {
       ),
       body: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) => ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: _controller.faqs.length,
-          itemBuilder: (context, index) {
-            final faqs = _controller.faqs[index];
-            return FaqItem(question: faqs.question, answer: faqs.answer);
-          },
-        ),
+        builder: (context, child) {
+          if (_controller.isLoading) {
+            return Center(
+              child: CircularProgressIndicator.adaptive(
+                backgroundColor: AppColors.white,
+              ),
+            );
+          }
+          if (_controller.faqs.isEmpty) {
+            return NoData(
+              onPressed: () => _controller.loadFaq(),
+              text: "No FAQ Found",
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: _controller.faqs.length,
+            itemBuilder: (context, index) {
+              final faqs = _controller.faqs[index];
+              return FaqItem(question: faqs.question, answer: faqs.answer);
+            },
+          );
+        },
       ),
     );
   }
