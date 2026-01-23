@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/features/marketplace/presentation/category_product_screen.dart';
+import 'package:urock_media_movie_app/features/profile/presentation/about_screen.dart';
+import 'package:urock_media_movie_app/features/profile/presentation/term_condition_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/auth/views/sign_in_screen.dart';
@@ -58,6 +60,8 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String categoryProduct = '/category-product';
+  static const String termCondition = "/term-condition";
+  static const String about = "/about";
 
   /// Generate routes with TV detection
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -122,7 +126,7 @@ class AppRoutes {
         );
 
       case chat:
-        final args = settings.arguments as Map<String, String>?;
+        final args = settings.arguments as Map<String, dynamic>?;
         if (args == null) {
           return _errorRoute('Chat data is required');
         }
@@ -131,6 +135,10 @@ class AppRoutes {
             name: args['name'] ?? 'Unknown',
             avatar: args['avatar'] ?? 'U',
             chatId: args['chatId'] as String,
+            userId: args['userId'] as String,
+            isBlocked: args['isBlocked'] as bool,
+            isMuted: args['isMuted'] as bool,
+            isActive: args['isActive'] as bool,
           ),
           settings: settings,
         );
@@ -194,6 +202,16 @@ class AppRoutes {
       case privacyPolicy:
         return MaterialPageRoute(
           builder: (_) => const PrivacyPolicyScreen(),
+          settings: settings,
+        );
+      case termCondition:
+        return MaterialPageRoute(
+          builder: (_) => const TermConditionScreen(),
+          settings: settings,
+        );
+      case about:
+        return MaterialPageRoute(
+          builder: (_) => const AboutScreen(),
           settings: settings,
         );
 
@@ -290,5 +308,7 @@ class AppRoutes {
     cart,
     checkout,
     categoryProduct,
+    termCondition,
+    about,
   ];
 }

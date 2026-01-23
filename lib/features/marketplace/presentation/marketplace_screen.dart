@@ -22,12 +22,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     (index) => ScrollController(),
   ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
-  final List<Map<String, dynamic>> categories = [
-    {'name': 'Clothing', 'icon': Icons.checkroom},
-    {'name': 'Electronics', 'icon': Icons.devices},
-    {'name': 'Home Appliances', 'icon': Icons.kitchen},
-    {'name': 'Clothing', 'icon': Icons.chair},
-  ];
+  // final List<Map<String, dynamic>> categories = [
+  //   {'name': 'Clothing', 'icon': Icons.checkroom},
+  //   {'name': 'Electronics', 'icon': Icons.devices},
+  //   {'name': 'Home Appliances', 'icon': Icons.kitchen},
+  //   {'name': 'Clothing', 'icon': Icons.chair},
+  // ];
   final _controller = MarketplaceController();
 
   @override
@@ -71,6 +71,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     _scrollController[2].dispose();
     _scrollController[3].dispose();
     _scrollController[1].dispose();
+    _scrollController[0].dispose();
   }
 
   @override
@@ -159,6 +160,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     ],
                   ),
                 ),
+
                 // Categories
                 if (_controller.categories.isNotEmpty) ...[
                   Padding(
@@ -175,20 +177,26 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 100,
-                    child: ListView.builder(
-                      controller: _scrollController[0],
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: _controller.categories.length,
-                      itemBuilder: (context, index) {
-                        final item = _controller.categories[index];
-                        return CategoryIcon(
-                          name: item.name,
-                          id: item.id,
-                          icon: "${ApiConfig.imageUrl}${item.image}",
-                        );
-                      },
-                    ),
+                    child: _controller.isLoading.first
+                        ? Center(
+                            child: CircularProgressIndicator.adaptive(
+                              backgroundColor: AppColors.white,
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: _scrollController[0],
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _controller.categories.length,
+                            itemBuilder: (context, index) {
+                              final item = _controller.categories[index];
+                              return CategoryIcon(
+                                name: item.name,
+                                id: item.id,
+                                icon: "${ApiConfig.imageUrl}${item.image}",
+                              );
+                            },
+                          ),
                   ),
 
                   const SizedBox(height: 24),
@@ -241,7 +249,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     bool isLoading,
     ScrollController scrollController,
   ) {
-    if (products.isEmpty) {
+    if (products.isEmpty && !isLoading) {
       return SizedBox.shrink();
     }
     return Column(

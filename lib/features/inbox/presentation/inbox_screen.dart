@@ -15,7 +15,6 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
-  final TextEditingController _searchController = TextEditingController();
   int _selectedNavIndex = 1; // Inbox is at index 1
 
   // Mock messages data
@@ -96,12 +95,6 @@ class _InboxScreenState extends State<InboxScreen> {
   }
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -122,79 +115,96 @@ class _InboxScreenState extends State<InboxScreen> {
         ),
         centerTitle: true,
       ),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          if (_controller.isLoading) {
-            return Center(
-              child: CircularProgressIndicator.adaptive(
-                backgroundColor: AppColors.white,
+      body: Column(
+        children: [
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(8),
               ),
-            );
-          }
-          final inbox = _controller.messages;
-          if (inbox.isEmpty) {
-            return NoData(
-              onPressed: () => _controller.loadMessages(),
-              text: "Inbox is empty",
-            );
-          }
-          return Column(
-            children: [
-              // Search bar
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(8),
+              child: TextField(
+                onSubmitted: (value) => _controller.searchMessage(value),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search messages...',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 14,
                   ),
-                  child: TextField(
-                    controller: _searchController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Search messages...',
-                      hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
-                        fontSize: 14,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.white.withOpacity(0.5),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Messages list
+          Expanded(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                if (_controller.isLoading) {
+                  return Center(
+                    child: CircularProgressIndicator.adaptive(
+                      backgroundColor: AppColors.white,
                     ),
+                  );
+                }
+                final inbox = _controller.messages;
+                if (inbox.isEmpty) {
+                  return NoData(
+                    onPressed: () => _controller.loadMessages(),
+                    text: "Inbox is empty",
+                  );
+                }
+
+                return RefreshIndicator.adaptive(
+                  onRefresh: () => _controller.onRefresh(),
+                  child: ListView.builder(
+                    itemCount: inbox.length,
+                    itemBuilder: (context, index) {
+                      return MessageListItem(
+                        name: inbox[index].participants.isNotEmpty
+                            ? inbox[index].participants.first.name
+                            : "",
+                        message: inbox[index].lastMessage == null
+                            ? ""
+                            : inbox[index].lastMessage!.type == "text"
+                            ? inbox[index].lastMessage!.text
+                            : "send an image",
+                        time: _controller.timeAgoShort(
+                          inbox[index].lastMessageAt,
+                        ),
+                        avatar: inbox[index].participants.isEmpty
+                            ? ""
+                            : "${ApiConfig.imageUrl}${inbox[index].participants.first.image}",
+                        unreadCount: inbox[index].unreadCount,
+                        isTyping: false,
+                        chatId: inbox[index].id,
+                        userId: inbox[index].participants.isEmpty
+                            ? ""
+                            : inbox[index].participants.first.id,
+                        isBlocked: inbox[index].isBlocked,
+                        isMuted: inbox[index].isMuted,
+                        isActive: inbox[index].status == "active",
+                      );
+                    },
                   ),
-                ),
-              ),
-              // Messages list
-              Expanded(
-                child: ListView.builder(
-                  itemCount: inbox.length,
-                  itemBuilder: (context, index) {
-                    return MessageListItem(
-                      name: inbox[index].participants.first.name,
-                      message: "",
-                      time: _controller.timeAgoShort(
-                        inbox[index].lastMessageAt,
-                      ),
-                      avatar:
-                          "${ApiConfig.imageUrl}${inbox[index].participants.first.image}",
-                      unreadCount: inbox[index].unreadCount,
-                      isTyping: false,
-                      chatId: inbox[index].id,
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedNavIndex,

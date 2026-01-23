@@ -11,6 +11,10 @@ class MessageListItem extends StatelessWidget {
   final int unreadCount;
   final bool isTyping;
   final String chatId;
+  final String userId;
+  final bool isBlocked;
+  final bool isMuted;
+  final bool isActive;
 
   const MessageListItem({
     super.key,
@@ -21,6 +25,10 @@ class MessageListItem extends StatelessWidget {
     this.unreadCount = 0,
     this.isTyping = false,
     required this.chatId,
+    required this.userId,
+    required this.isBlocked,
+    required this.isMuted,
+    required this.isActive,
   });
 
   @override
@@ -29,7 +37,15 @@ class MessageListItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).pushNamed(
           '/chat',
-          arguments: {'name': name, 'avatar': avatar, 'chatId': chatId},
+          arguments: {
+            'name': name,
+            'avatar': avatar,
+            'chatId': chatId,
+            'userId': userId,
+            'isBlocked': isBlocked,
+            'isMuted': isMuted,
+            'isActive': isActive,
+          },
         );
       },
       child: Container(

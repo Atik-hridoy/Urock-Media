@@ -20,7 +20,6 @@ class ProductModel {
   final int reviewCount;
   final int totalStock;
   final String status;
-  final String? categoryId;
   bool isBookmarked;
 
   ProductModel({
@@ -39,7 +38,6 @@ class ProductModel {
     required this.reviewCount,
     required this.totalStock,
     required this.status,
-    required this.categoryId,
     required this.isBookmarked,
   });
 
@@ -61,7 +59,6 @@ class ProductModel {
       reviewCount: 0,
       totalStock: 0,
       status: '',
-      categoryId: null,
       isBookmarked: false,
     );
   }
@@ -101,7 +98,6 @@ class ProductModel {
       reviewCount: json['reviewCount'] ?? 0,
       totalStock: json['totalStock'] ?? 0,
       status: json['status'] ?? '',
-      categoryId: json['categoryId'],
       isBookmarked: json['isBookmarked'] ?? false,
     );
   }

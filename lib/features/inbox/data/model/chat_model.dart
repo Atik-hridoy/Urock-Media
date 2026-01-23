@@ -1,7 +1,7 @@
 class ChatModel {
   final String id;
   final List<ChatParticipantModel> participants;
-  final ChatMessageModel? lastMessage;
+  final LastMessageModel? lastMessage;
   final String status;
   final bool isDeleted;
   final List<String> readBy;
@@ -52,8 +52,8 @@ class ChatModel {
               .toList() ??
           [],
       lastMessage: json['lastMessage'] != null
-          ? ChatMessageModel.fromJson(json['lastMessage'])
-          : null,
+          ? LastMessageModel.fromJson(json['lastMessage'])
+          : LastMessageModel.empty(),
       status: json['status'] ?? '',
       isDeleted: json['isDeleted'] ?? false,
       readBy:
@@ -183,10 +183,102 @@ class ChatResponseModel {
   }
 }
 
-class ChatMessageModel {
-  ChatMessageModel();
+class LastMessageModel {
+  final String id;
+  final String chatId;
+  final String senderId;
+  final String text;
+  final List<String> images;
+  final bool read;
+  final String type;
+  final bool isDeleted;
+  final bool isPinned;
+  final String? replyTo;
+  final List<String> iconViewed;
+  final DateTime? createdAt;
+  final List<String> pinnedByUsers;
+  final List<String> deletedForUsers;
+  final List<dynamic> reactions;
+  final DateTime? updatedAt;
 
-  factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
-    return ChatMessageModel();
+  LastMessageModel({
+    required this.id,
+    required this.chatId,
+    required this.senderId,
+    required this.text,
+    required this.images,
+    required this.read,
+    required this.type,
+    required this.isDeleted,
+    required this.isPinned,
+    required this.replyTo,
+    required this.iconViewed,
+    required this.createdAt,
+    required this.pinnedByUsers,
+    required this.deletedForUsers,
+    required this.reactions,
+    required this.updatedAt,
+  });
+
+  factory LastMessageModel.fromJson(Map<String, dynamic> json) {
+    return LastMessageModel(
+      id: json['_id'] ?? '',
+      chatId: json['chatId'] ?? '',
+      senderId: json['sender'] ?? '',
+      text: json['text'] ?? '',
+      images:
+          (json['images'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      read: json['read'] ?? false,
+      type: json['type'] ?? '',
+      isDeleted: json['isDeleted'] ?? false,
+      isPinned: json['isPinned'] ?? false,
+      replyTo: json['replyTo']?.toString(),
+      iconViewed:
+          (json['iconViewed'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      pinnedByUsers:
+          (json['pinnedByUsers'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      deletedForUsers:
+          (json['deletedForUsers'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      reactions: json['reactions'] ?? [],
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
+    );
+  }
+
+  factory LastMessageModel.empty() {
+    return LastMessageModel(
+      id: '',
+      chatId: '',
+      senderId: '',
+      text: '',
+      images: const [],
+      read: false,
+      type: '',
+      isDeleted: false,
+      isPinned: false,
+      replyTo: null,
+      iconViewed: const [],
+      createdAt: null,
+      pinnedByUsers: const [],
+      deletedForUsers: const [],
+      reactions: const [],
+      updatedAt: null,
+    );
   }
 }

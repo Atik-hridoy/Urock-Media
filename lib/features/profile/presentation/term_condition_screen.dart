@@ -5,20 +5,20 @@ import 'package:urock_media_movie_app/features/profile/logic/profile_controller.
 import '../../../core/constants/app_colors.dart';
 
 /// Privacy Policy screen
-class PrivacyPolicyScreen extends StatefulWidget {
-  const PrivacyPolicyScreen({super.key});
+class TermConditionScreen extends StatefulWidget {
+  const TermConditionScreen({super.key});
 
   @override
-  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+  State<TermConditionScreen> createState() => _TermConditionScreenState();
 }
 
-class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+class _TermConditionScreenState extends State<TermConditionScreen> {
   final _controller = ProfileController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadPrivacyPolicy();
+    _controller.loadTerm();
   }
 
   @override
@@ -33,7 +33,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Privacy Policy',
+          'Term and Condition',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -44,14 +44,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       body: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) => _controller.privacyPolicy.isEmpty
+        builder: (context, child) => _controller.terms.isEmpty
             ? NoData(
-                onPressed: () => _controller.loadPrivacyPolicy(),
-                text: "No privacy policy found",
+                onPressed: () => _controller.loadTerm(),
+                text: "No term and condition found",
               )
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                child: Html(data: _controller.privacyPolicy),
+                child: Html(data: _controller.terms),
                 // child: Column(
                 //   crossAxisAlignment: CrossAxisAlignment.start,
                 //   children: [

@@ -20,4 +20,21 @@ class ChatRepository {
       return ChatResponseModel.empty();
     }
   }
+
+  static Future<ChatResponseModel> fetchSearchChatRepo(String message) async {
+    try {
+      final response = await ApiService().get(
+        ApiEndpoints.chat,
+        queryParameters: {'searchTerm': message},
+      );
+      if (response.statusCode == 200) {
+        final chats = ChatResponseModel.fromJson(response.data['data']);
+        return chats;
+      }
+      return ChatResponseModel.empty();
+    } catch (e) {
+      Logger.error("get search chat repo", e);
+      return ChatResponseModel.empty();
+    }
+  }
 }

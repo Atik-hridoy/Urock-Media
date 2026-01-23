@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/config/api_config.dart';
 import 'package:urock_media_movie_app/core/widgets/no_data.dart';
+import 'package:urock_media_movie_app/features/marketplace/logic/checkout_controller.dart';
 import 'package:urock_media_movie_app/features/marketplace/logic/marketplace_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/cart_item_card.dart';
@@ -153,7 +154,8 @@ class _CartScreenState extends State<CartScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/checkout');
+                        CheckoutController().onPlaceOrder(context);
+                        // Navigator.of(context).pushNamed('/checkout');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.goldLight,

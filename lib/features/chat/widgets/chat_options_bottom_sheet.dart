@@ -3,7 +3,19 @@ import 'package:urock_media_movie_app/features/chat/logic/chat_controller.dart';
 
 /// Chat options bottom sheet
 class ChatOptionsBottomSheet extends StatelessWidget {
-  const ChatOptionsBottomSheet({super.key});
+  const ChatOptionsBottomSheet({
+    super.key,
+    required this.chatId,
+    required this.userId,
+    required this.isMuted,
+    required this.isBlocked,
+    required this.onMuted,
+  });
+  final String chatId;
+  final String userId;
+  final bool isMuted;
+  final bool isBlocked;
+  final VoidCallback onMuted;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +42,13 @@ class ChatOptionsBottomSheet extends StatelessWidget {
             // Mute Conversation
             _buildOption(
               context,
-              icon: Icons.notifications_off_outlined,
-              title: 'Mute Conversation',
+              icon: !isMuted
+                  ? Icons.notifications_active_outlined
+                  : Icons.notifications_off_outlined,
+              title: isMuted ? 'Unmute Conversation' : 'Mute Conversation',
               onTap: () {
                 Navigator.pop(context);
+                onMuted();
                 // TODO: Implement mute functionality
               },
             ),
@@ -41,9 +56,10 @@ class ChatOptionsBottomSheet extends StatelessWidget {
             _buildOption(
               context,
               icon: Icons.block_outlined,
-              title: 'Block Conversation',
+              title: isBlocked ? 'Unblock Conversation' : 'Block Conversation',
               onTap: () {
                 Navigator.pop(context);
+                ChatController().blockUser(chatId, userId, isBlocked);
                 // TODO: Implement block functionality
               },
             ),
@@ -121,11 +137,17 @@ class ChatOptionsBottomSheet extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
-              final isDeleted = await ChatController().deleteChat();
+              final navigator = Navigator.of(context); // cache BEFORE await
+
+              navigator.pop(); // first pop
+
+              final isDeleted = await ChatController().deleteChat(chatId);
+
               if (isDeleted) {
-                Navigator.pop(context);
+                navigator.pop(); // safe
+                navigator.pop();
               }
+
               // TODO: Implement delete functionality
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -135,11 +157,24 @@ class ChatOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  static void show(BuildContext context) {
+  static void show({
+    required BuildContext context,
+    required String chatId,
+    required String userId,
+    required bool isBlocked,
+    required bool isMuted,
+    required VoidCallback onMuted,
+  }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => const ChatOptionsBottomSheet(),
+      builder: (context) => ChatOptionsBottomSheet(
+        chatId: chatId,
+        userId: userId,
+        isBlocked: isBlocked,
+        isMuted: isMuted,
+        onMuted: onMuted,
+      ),
     );
   }
 }
