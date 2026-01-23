@@ -2,7 +2,6 @@ class SingleProductModel {
   final String id;
   final SellerModel seller;
   final String category;
-  final String? categoryId;
   final String name;
   final String? model; // optional
   final String brand;
@@ -33,7 +32,6 @@ class SingleProductModel {
     required this.id,
     required this.seller,
     required this.category,
-    required this.categoryId,
     required this.name,
     this.model,
     required this.brand,
@@ -66,7 +64,6 @@ class SingleProductModel {
     id: '',
     seller: SellerModel.empty(),
     category: '',
-    categoryId: null,
     name: '',
     model: null,
     brand: '',
@@ -102,7 +99,6 @@ class SingleProductModel {
           ? SellerModel.fromJson(json['sellerId'])
           : SellerModel.empty(),
       category: json['category'] ?? '',
-      categoryId: json['categoryId'],
       name: json['name'] ?? '',
       model: json['model'],
       brand: json['brand'] ?? '',
@@ -152,7 +148,6 @@ class SingleProductModel {
     '_id': id,
     'sellerId': seller.toJson(),
     'category': category,
-    'categoryId': categoryId,
     'name': name,
     'model': model,
     'brand': brand,
