@@ -26,11 +26,19 @@ Future<void> initializeServices() async {
       
       // Check login status only if storage is initialized
       final isLoggedIn = StorageService.isLoggedIn();
-      AppLogger.info('Login status: ${isLoggedIn ? "Logged In" : "Not Logged In"}');
+      final token = StorageService.getToken();
+      
+      AppLogger.info('Login status check', data: {
+        'isLoggedIn': isLoggedIn,
+        'hasToken': token != null,
+        'tokenLength': token?.length ?? 0,
+        'token': token != null ? '${token.substring(0, 10)}...' : 'null',
+      });
 
       if (isLoggedIn) {
-        final token = StorageService.getToken();
-        AppLogger.debug('Token found', data: {'token_length': token?.length});
+        AppLogger.debug('Token found - User should auto-login', data: {'token_length': token?.length});
+      } else {
+        AppLogger.info('No token found - User needs to login');
       }
     } else {
       AppLogger.warning('Storage Service failed to initialize - Auto-login disabled');

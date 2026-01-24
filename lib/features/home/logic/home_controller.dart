@@ -11,6 +11,7 @@ class HomeController extends ChangeNotifier {
   List<Movie> _trendingMovies = [];
   List<Movie> _popularMovies = [];
   List<Movie> _topRatedMovies = [];
+  List<Movie> _popularSeries = []; // Added for popular series
   
   bool _isLoading = false;
   String? _errorMessage;
@@ -20,6 +21,7 @@ class HomeController extends ChangeNotifier {
   List<Movie> get trendingMovies => _trendingMovies;
   List<Movie> get popularMovies => _popularMovies;
   List<Movie> get topRatedMovies => _topRatedMovies;
+  List<Movie> get popularSeries => _popularSeries; // Added
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
@@ -38,6 +40,7 @@ class HomeController extends ChangeNotifier {
         _loadTrendingMovies(),
         _loadPopularMovies(),
         _loadTopRatedMovies(),
+        _loadPopularSeries(), // Added
       ]);
 
       Logger.info('Movies loaded successfully');
@@ -58,11 +61,19 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _loadPopularMovies() async {
+    Logger.info('Loading popular movies from API...');
     _popularMovies = await _movieService.getPopularMovies();
+    Logger.info('Popular movies loaded: ${_popularMovies.length} movies');
   }
 
   Future<void> _loadTopRatedMovies() async {
     _topRatedMovies = await _movieService.getTopRatedMovies();
+  }
+
+  Future<void> _loadPopularSeries() async {
+    Logger.info('Loading popular series from API...');
+    _popularSeries = await _movieService.getPopularSeries();
+    Logger.info('Popular series loaded: ${_popularSeries.length} series');
   }
 
   /// Refresh all movies

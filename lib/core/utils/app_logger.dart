@@ -301,7 +301,7 @@ class AppLogger {
     if (!_isDebugMode) return;
 
     final buffer = StringBuffer();
-    buffer.writeln('$_cyan');
+    buffer.writeln(_cyan);
     buffer.writeln('');
     buffer.writeln('▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓');
     buffer.writeln('▓                                                               ▓');

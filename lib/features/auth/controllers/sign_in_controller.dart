@@ -126,7 +126,16 @@ class SignInController {
 
   /// Check if user is already logged in
   bool isLoggedIn() {
-    return StorageService.isLoggedIn();
+    final loggedIn = StorageService.isLoggedIn();
+    final token = StorageService.getToken();
+    
+    AppLogger.info('Checking login status', data: {
+      'isLoggedIn': loggedIn,
+      'hasToken': token != null,
+      'tokenLength': token?.length ?? 0,
+    });
+    
+    return loggedIn;
   }
 
   /// Navigate to sign up

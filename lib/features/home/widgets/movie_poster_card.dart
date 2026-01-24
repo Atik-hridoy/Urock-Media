@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../data/movie_model.dart';
+import '../services/movie_service.dart';
+import '../../../core/widgets/app_loader.dart';
+import '../../movie_details/presentation/details_screen.dart';
+import '../../series/presentation/series_details_screen_api.dart';
 
 /// Movie poster card widget
 class MoviePosterCard extends StatelessWidget {
@@ -12,16 +16,73 @@ class MoviePosterCard extends StatelessWidget {
     this.isSeries = false,
   });
 
+  Future<void> _handleTap(BuildContext context) async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: AppLoader(message: 'Loading details...'),
+      ),
+    );
+
+    try {
+      final movieService = MovieService();
+      final movieId = movie.mongoId ?? movie.id.toString();
+
+      if (isSeries) {
+        // Fetch series details to ensure data is loaded
+        await movieService.getSeriesDetails(movieId);
+        
+        // Close loading dialog
+        if (context.mounted) Navigator.of(context).pop();
+        
+        // Navigate to series details
+        if (context.mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SeriesDetailsScreenApi(series: movie),
+            ),
+          );
+        }
+      } else {
+        // Fetch movie details
+        final movieDetails = await movieService.getMovieDetails(movieId);
+        
+        // Close loading dialog
+        if (context.mounted) Navigator.of(context).pop();
+        
+        // Navigate to movie details with fetched data
+        if (context.mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => DetailsScreen(movie: movieDetails),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (context.mounted) Navigator.of(context).pop();
+      
+      // Show error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load details: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final imageUrl = movie.fullPosterPath;
+    
     return GestureDetector(
-      onTap: () {
-        if (isSeries) {
-          Navigator.of(context).pushNamed('/series-details', arguments: movie);
-        } else {
-          Navigator.of(context).pushNamed('/movie-details', arguments: movie);
-        }
-      },
+      onTap: () => _handleTap(context),
       child: Container(
         width: 120,
         decoration: BoxDecoration(
@@ -32,26 +93,43 @@ class MoviePosterCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Stack(
             children: [
-              // Placeholder for movie poster
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.grey[800]!,
-                      Colors.grey[900]!,
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.movie,
-                    size: 40,
-                    color: Colors.white.withOpacity(0.3),
-                  ),
-                ),
-              ),
+              // Movie poster image
+              if (imageUrl != null)
+                Image.network(
+                  imageUrl,
+                  width: 120,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.grey[800]!,
+                            Colors.grey[900]!,
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildPlaceholder();
+                  },
+                )
+              else
+                _buildPlaceholder(),
+              
               // Title overlay at bottom
               Positioned(
                 bottom: 0,
@@ -65,7 +143,7 @@ class MoviePosterCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -83,6 +161,28 @@ class MoviePosterCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.grey[800]!,
+            Colors.grey[900]!,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.movie,
+          size: 40,
+          color: Colors.white.withValues(alpha: 0.3),
         ),
       ),
     );

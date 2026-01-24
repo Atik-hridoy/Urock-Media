@@ -52,9 +52,9 @@ class TvDetector {
   /// Check if screen dimensions match TV criteria
   static bool isTVScreen(double screenWidth, double screenHeight) {
     // TV screens are typically:
-    // - Width > 1920px (4K and above)
-    // - Or width > 1400px with landscape orientation
-    return screenWidth > 1920 || (screenWidth > 1400 && screenWidth > screenHeight);
+    // - Width >= 1920px (Full HD and above)
+    // - Or width >= 1000px with landscape orientation (for Android TV emulators)
+    return screenWidth >= 1920 || (screenWidth >= 1000 && screenWidth > screenHeight);
   }
 
   /// Detect if the app is running on a TV platform

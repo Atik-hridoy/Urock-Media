@@ -26,6 +26,8 @@ class ApiEndpoints {
   static const String movieDetails = '/movies/{id}';
   static const String popularMovies = '/movies/popular';
   static const String trendingMovies = '/movies/trending';
+  static const String recommendedMovies = '/movies/recommended'; // General recommended movies
+  static const String newReleaseMovies = '/movies/new-release'; // New release movies
   static const String upcomingMovies = '/movies/upcoming';
   static const String topRatedMovies = '/movies/top-rated';
   static const String nowPlayingMovies = '/movies/now-playing';
@@ -35,12 +37,17 @@ class ApiEndpoints {
   static const String movieTrailers = '/movies/{id}/trailers';
   static const String movieCast = '/movies/{id}/cast';
   static const String similarMovies = '/movies/{id}/similar';
-  static const String recommendedMovies = '/movies/{id}/recommendations';
+  static const String relatedMovies = '/movies/related/{id}'; // Added for related movies
+ 
 
   // ==================== TV Shows ====================
   static const String tvShows = '/tv-shows';
   static const String tvShowDetails = '/tv-shows/{id}';
   static const String popularTvShows = '/tv-shows/popular';
+  static const String popularSeries = '/series/popular'; // Added for your backend
+  static const String seriesDetails = '/series/{id}'; // Added for series details
+  static const String newReleaseSeries = '/series/new-release'; // New release series
+  static const String recommendedSeries = '/series/recommended'; // Recommended series
   static const String trendingTvShows = '/tv-shows/trending';
   static const String topRatedTvShows = '/tv-shows/top-rated';
   static const String onTheAirTvShows = '/tv-shows/on-the-air';
@@ -157,6 +164,11 @@ class ApiEndpoints {
     return replaceParams(similarMovies, {'id': movieId});
   }
 
+  /// Get related movies endpoint with ID
+  static String getRelatedMovies(String movieId) {
+    return replaceParams(relatedMovies, {'id': movieId});
+  }
+
   /// Get recommended movies endpoint with ID
   static String getRecommendedMovies(int movieId) {
     return replaceParams(recommendedMovies, {'id': movieId});
@@ -178,5 +190,10 @@ class ApiEndpoints {
       'id': tvShowId,
       'seasonNumber': seasonNumber,
     });
+  }
+
+  /// Get series details endpoint with ID
+  static String getSeriesDetails(String seriesId) {
+    return replaceParams(seriesDetails, {'id': seriesId});
   }
 }

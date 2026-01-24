@@ -40,7 +40,9 @@ class TvDetailsScreen extends StatelessWidget {
                   const SizedBox(height: AppSizes.spacingXL),
                   _buildOverview(context),
                   const SizedBox(height: AppSizes.spacingXL),
-                  const RelatedMoviesSection(),
+                  RelatedMoviesSection(
+                    movieId: movie.mongoId ?? movie.id.toString(),
+                  ),
                 ],
               ),
             ),
@@ -67,7 +69,7 @@ class TvDetailsScreen extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSizes.radiusLG),
-          border: Border.all(color: AppColors.goldDark.withOpacity(0.5)),
+          border: Border.all(color: AppColors.goldDark.withValues(alpha: 0.5)),
           gradient: const LinearGradient(
             colors: [Color(0xFF1C1C1C), Color(0xFF101010)],
             begin: Alignment.topLeft,
@@ -96,7 +98,7 @@ class TvDetailsScreen extends StatelessWidget {
         Text(
           'Action • Superhero • ${movie.releaseYear ?? '2025'}',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
         ),
       ],
@@ -116,7 +118,7 @@ class TvDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildOverview(BuildContext context) {
-    final textColor = Colors.white.withOpacity(0.7);
+    final textColor = Colors.white.withValues(alpha: 0.7);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,7 +159,7 @@ class TvDetailsScreen extends StatelessWidget {
         const SizedBox(height: AppSizes.spacingXS),
         Text(
           value,
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
         ),
       ],
     );
@@ -180,7 +182,7 @@ class _QuickAction extends StatelessWidget {
           height: 56,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSizes.radiusLG),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
           ),
           child: Icon(icon, color: Colors.white),
         ),

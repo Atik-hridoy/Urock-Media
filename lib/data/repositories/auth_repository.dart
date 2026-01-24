@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:urock_media_movie_app/core/utils/logger.dart';
 import '../../core/config/api_endpoints.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/storage_service.dart';
@@ -27,8 +26,24 @@ class AuthRepository {
       final authResponse = AuthResponseModel.fromJson(response.data);
 
       if (authResponse.success && authResponse.token != null) {
+        AppLogger.info('Saving token to storage...', data: {
+          'token_length': authResponse.token!.length,
+        });
+        
         // Save token to local storage
-        await StorageService.saveToken(authResponse.token!);
+        final tokenSaved = await StorageService.saveToken(authResponse.token!);
+        
+        AppLogger.info('Token save result', data: {
+          'saved': tokenSaved,
+          'storage_initialized': StorageService.isInitialized,
+        });
+
+        // Verify token was saved
+        final savedToken = StorageService.getToken();
+        AppLogger.info('Token verification', data: {
+          'token_exists': savedToken != null,
+          'token_matches': savedToken == authResponse.token,
+        });
 
         // Save user data if available
         if (authResponse.user != null) {
@@ -39,6 +54,15 @@ class AuthRepository {
           'Login successful',
           data: {'email': email, 'token_saved': true},
         );
+        AppLogger.success('Login successful', data: {
+          'email': email,
+          'token_saved': tokenSaved,
+        });
+      } else {
+        AppLogger.warning('Login response missing token', data: {
+          'success': authResponse.success,
+          'has_token': authResponse.token != null,
+        });
       }
 
       return authResponse;

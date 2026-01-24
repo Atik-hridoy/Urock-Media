@@ -3,6 +3,10 @@ import '../../../core/constants/app_colors.dart';
 import '../logic/home_controller.dart';
 import '../widgets/featured_content.dart';
 import '../widgets/movie_section.dart';
+import '../widgets/recommended_section.dart';
+import '../widgets/new_release_section.dart';
+import '../widgets/new_release_series_section.dart';
+import '../widgets/recommended_series_section.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 /// Home screen with tabs and content sections
@@ -156,13 +160,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           const SizedBox(height: 24),
           MovieSection(
             title: 'Popular Series',
-            movies: _controller.trendingMovies,
+            movies: _controller.popularSeries, // API data
+            isSeries: true,
           ),
           const SizedBox(height: 24),
           MovieSection(
             title: 'My Watchlist',
             movies: _controller.topRatedMovies,
           ),
+          const SizedBox(height: 24),
+          const RecommendedSection(),
+          const SizedBox(height: 24),
+          const NewReleaseSection(),
           const SizedBox(height: 24),
         ],
       ),
@@ -182,6 +191,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 24),
           MovieSection(
+            title: 'Popular Movies',
+            movies: _controller.popularMovies,
+          ),
+          const SizedBox(height: 24),
+          MovieSection(
             title: 'Trending Movies',
             movies: _controller.trendingMovies,
           ),
@@ -190,6 +204,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             title: 'Top Rated',
             movies: _controller.topRatedMovies,
           ),
+          const SizedBox(height: 24),
+          const RecommendedSection(),
+          const SizedBox(height: 24),
+          const NewReleaseSection(),
           const SizedBox(height: 24),
         ],
       ),
@@ -209,14 +227,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 24),
           MovieSection(
-            title: 'Trending Series',
-            movies: _controller.trendingMovies,
+            title: 'Popular Series',
+            movies: _controller.popularSeries,
             isSeries: true,
           ),
           const SizedBox(height: 24),
           MovieSection(
-            title: 'Popular Series',
-            movies: _controller.popularMovies,
+            title: 'Trending Series',
+            movies: _controller.trendingMovies,
             isSeries: true,
           ),
           const SizedBox(height: 24),
@@ -225,6 +243,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             movies: _controller.topRatedMovies,
             isSeries: true,
           ),
+          const SizedBox(height: 24),
+          const RecommendedSeriesSection(),
+          const SizedBox(height: 24),
+          const NewReleaseSeriesSection(),
           const SizedBox(height: 24),
         ],
       ),
