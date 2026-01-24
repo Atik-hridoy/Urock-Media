@@ -2,5 +2,5 @@
 class PreferenceModel {
   String preference;
   bool isSelected;
-  PreferenceModel({required this.preference, required this.isSelected});
+  PreferenceModel({required this.preference, this.isSelected = false});
 }

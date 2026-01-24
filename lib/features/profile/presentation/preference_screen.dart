@@ -46,7 +46,9 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 SizedBox(height: 20),
                 Wrap(
                   spacing: 8, // horizontal space
-                  children: List.generate(5, (index) {
+                  children: List.generate(_controller.preferences.length, (
+                    index,
+                  ) {
                     final item = _controller.preferences[index];
                     return ElevatedButton(
                       onPressed: () => _controller.setPreference(index),
@@ -71,7 +73,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
                 Spacer(),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _controller.save(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.goldLight,
                     foregroundColor: Colors.black,

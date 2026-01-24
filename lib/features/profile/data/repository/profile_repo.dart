@@ -47,7 +47,7 @@ class ProfileRepo {
   static Future<List<dynamic>> changePasswordRepo(dynamic body) async {
     try {
       final response = await ApiService().post(
-        ApiEndpoints.resetPassword,
+        ApiEndpoints.changePass,
         data: body,
       );
       return [response.data['message'], response.statusCode == 200];
