@@ -110,37 +110,53 @@ class _CartScreenState extends State<CartScreen> {
                         price: item.price,
                         quantity: item.quantity,
                         isSimpleProduct: item.productType == 'simple',
-                        onQuantityIncrease: () {
+                        onQuantityIncrease: () async {
                           setState(() {
                             item.quantity += 1;
                           });
-                          _controller.onquantityIncrease(
+                          if (!await _controller.onquantityIncrease(
                             context,
                             item.product.id,
                             item.variantId,
-                          );
+                          )) {
+                            setState(() {
+                              item.quantity -= 1;
+                            });
+                          }
                         },
-                        onQuantityDecrease: () {
+                        onQuantityDecrease: () async {
                           setState(() {
                             item.quantity -= 1;
                           });
-                          _controller.onQuantityDecrease(
+                          if (!await _controller.onQuantityDecrease(
                             context,
                             item.product.id,
                             item.variantId,
-                          );
+                          )) {
+                            setState(() {
+                              item.quantity += 1;
+                            });
+                          }
                         },
                         onRemove: () async {
+                          final temp = cart.products[index];
                           setState(() {
                             cart.products.removeAt(index);
                           });
-                          final message = await _controller.onDeleteCart(
+                          final response = await _controller.onDeleteCart(
                             item.id,
                             variantId: item.variantId,
                           );
+                          if (!response['isSucceed']) {
+                            setState(() {
+                              cart.products.insert(index, temp);
+                            });
+                          }
                           ScaffoldMessenger.of(context)
                             ..clearSnackBars()
-                            ..showSnackBar(SnackBar(content: Text(message)));
+                            ..showSnackBar(
+                              SnackBar(content: Text(response['message'])),
+                            );
                         },
                       );
                     },

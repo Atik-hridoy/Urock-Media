@@ -178,35 +178,47 @@ class MarketplaceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  onquantityIncrease(BuildContext context, String id, String? variantId) async {
+  Future<bool> onquantityIncrease(
+    BuildContext context,
+    String id,
+    String? variantId,
+  ) async {
     try {
       // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity++;
-      await ApiService().patch(
+      final response = await ApiService().patch(
         "${ApiEndpoints.cartItem}$id/increment",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
+      return response.statusCode == 200;
     } catch (e) {
       Logger.error("quantity increase", e);
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
+      return false;
     } finally {
       notifyListeners();
     }
   }
 
-  onQuantityDecrease(BuildContext context, String id, String? variantId) async {
+  Future<bool> onQuantityDecrease(
+    BuildContext context,
+    String id,
+    String? variantId,
+  ) async {
     try {
       // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity--;
-      await ApiService().patch(
+      final response = await ApiService().patch(
         "${ApiEndpoints.cartItem}$id/decrement",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
+      return response.statusCode == 200;
     } catch (e) {
       Logger.error("quantity decrease", e);
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
+      return false;
     } finally {
       notifyListeners();
     }
@@ -216,18 +228,30 @@ class MarketplaceController extends ChangeNotifier {
     return '#${color.value.toRadixString(16).padLeft(8, '0')}';
   }
 
-  Future<String> onDeleteCart(String id, {String? variantId}) async {
+  Future<Map<String, dynamic>> onDeleteCart(
+    String id, {
+    String? variantId,
+  }) async {
     try {
       // cartItem.value!.products.removeWhere((e) => e.id == id);
-      cartItem.value!.products.removeWhere((e) => e.id == id);
+      //
       final response = await ApiService().delete(
         "${ApiEndpoints.cartItem}$id",
         queryParameters: {if (variantId != null) 'variantId': variantId},
       );
-      return response.data['message'];
+      if (response.statusCode == 200) {
+        cartItem.value!.products.removeWhere((e) => e.id == id);
+      }
+      return {
+        'message': response.data['message'],
+        'isSucceed': response.statusCode == 200,
+      };
     } catch (e) {
       Logger.error("cart delete", e);
-      return "Something went wrong. Please try again";
+      return {
+        'message': "Something went wrong. Please try again",
+        'isSucceed': false,
+      };
     } finally {
       notifyListeners();
     }
