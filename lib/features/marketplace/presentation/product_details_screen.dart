@@ -29,10 +29,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   final List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL'];
   final _controller = ProductDetailsController();
+  
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller.loadSingleProduct(widget.id);
+  }
+
+  String? _getSelectedColor() {
+    final item = _controller.singleProduct;
+    final colorVariant = item.variantTypes.firstWhereOrNull((e) => e.name == "Color");
+    if (colorVariant == null || colorVariant.options.isEmpty) return null;
+    if (_selectedColorIndex >= colorVariant.options.length) return null;
+    return colorVariant.options[_selectedColorIndex].name;
+  }
+
+  String? _getSelectedSize() {
+    final item = _controller.singleProduct;
+    final sizeVariant = item.variantTypes.firstWhereOrNull((e) => e.name == "Size");
+    if (sizeVariant == null || sizeVariant.options.isEmpty) return null;
+    if (_selectedSizeIndex >= sizeVariant.options.length) return null;
+    return sizeVariant.options[_selectedSizeIndex].name;
   }
 
   // bool _initialized = false;
@@ -48,12 +65,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   // }
   double get price {
     final item = _controller.singleProduct;
-    final double price = item.productType == 'simple'
-        ? item.price
-        : (item.variants.isNotEmpty && _selectedSizeIndex < item.variants.length
-              ? _controller.singleProduct.variants[_selectedSizeIndex].price
-              : item.minPrice);
-    return price;
+    if (item.productType == 'simple') {
+      return item.price;
+    }
+    
+    // For variable products, check if variants exist and index is valid
+    if (item.variants.isNotEmpty && _selectedSizeIndex < item.variants.length) {
+      return item.variants[_selectedSizeIndex].price;
+    }
+    
+    // Fallback to minPrice
+    return item.minPrice;
   }
 
   @override
@@ -214,7 +236,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           (context, error, stackTrace) => Icon(
                                             Icons.checkroom,
                                             size: 50,
-                                            color: Colors.white.withOpacity(
+                                            color: Colors.white.withValues(alpha :
                                               0.3,
                                             ),
                                           ),
@@ -542,30 +564,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           onPressed: () async {
                             if (await _controller.addToCart(
                               index: _selectedSizeIndex,
-                              color: item.variantTypes
-                                  .firstWhereOrNull((e) => e.name == "Color")
-                                  ?.options[_selectedColorIndex]
-                                  .name,
-                              size: item.variantTypes
-                                  .firstWhereOrNull((e) => e.name == "Size")
-                                  ?.options[_selectedSizeIndex]
-                                  .name,
+                              color: _getSelectedColor(),
+                              size: _getSelectedSize(),
                             )) {
-                              ScaffoldMessenger.of(context)
-                                ..clearSnackBars()
-                                ..showSnackBar(
-                                  SnackBar(
-                                    content: Text("Added to cart successfully"),
-                                  ),
-                                );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                  ..clearSnackBars()
+                                  ..showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Added to cart successfully"),
+                                    ),
+                                  );
+                              }
                             } else {
-                              ScaffoldMessenger.of(context)
-                                ..clearSnackBars()
-                                ..showSnackBar(
-                                  SnackBar(content: Text("Failed to add cart")),
-                                );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                  ..clearSnackBars()
+                                  ..showSnackBar(
+                                    const SnackBar(content: Text("Failed to add cart")),
+                                  );
+                              }
                             }
-                            // Navigator.of(context).pushNamed('/cart');
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,

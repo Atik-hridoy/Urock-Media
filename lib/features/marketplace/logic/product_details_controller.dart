@@ -35,9 +35,24 @@ class ProductDetailsController extends ChangeNotifier {
         "quantity": 1,
       };
     } else {
+      // Check if variants exist and index is valid
+      if (singleProduct.variants.isEmpty) {
+        Logger.error("add to cart", "No variants available for this product");
+        isLoadingCart = false;
+        notifyListeners();
+        return false;
+      }
+      
+      if (index == null || index < 0 || index >= singleProduct.variants.length) {
+        Logger.error("add to cart", "Invalid variant index: $index");
+        isLoadingCart = false;
+        notifyListeners();
+        return false;
+      }
+      
       body = {
         "productId": singleProduct.id,
-        "variantId": singleProduct.variants[index!].variantId,
+        "variantId": singleProduct.variants[index].variantId,
         "price": singleProduct.variants[index].price,
         "quantity": 1,
         "selectedAttributes": {"Color": color, "Size": size},

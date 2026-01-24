@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:urock_media_movie_app/core/utils/logger.dart';
 import '../../core/config/api_endpoints.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/storage_service.dart';

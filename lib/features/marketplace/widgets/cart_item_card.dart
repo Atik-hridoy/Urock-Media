@@ -40,7 +40,7 @@ class CartItemCard extends StatelessWidget {
       child: Row(
         children: [
           // Product Image
-          Container(
+          SizedBox(
             width: 70,
             height: 70,
 

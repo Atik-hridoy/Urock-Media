@@ -16,13 +16,41 @@ class MovieService {
     return _getMockMovies();
   }
 
-  /// Get trending movies
+  /// Get trending movies from API
   Future<List<Movie>> getTrendingMovies() async {
-    Logger.info('Fetching trending movies...');
-    await Future.delayed(const Duration(seconds: 1)); // Simulate API call
-    
-    // TODO: Implement actual API call
-    return _getMockMovies();
+    try {
+      Logger.info('Fetching trending movies from API...');
+      
+      final response = await _apiService.get(ApiEndpoints.trendingMovies);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final responseData = response.data;
+        
+        // Handle response format: {success: true, data: [...]}
+        List<dynamic> moviesJson;
+        if (responseData is Map<String, dynamic> && responseData['data'] != null) {
+          moviesJson = responseData['data'] as List<dynamic>;
+        } else if (responseData is List) {
+          moviesJson = responseData;
+        } else {
+          Logger.warning('Unexpected response format for trending movies');
+          return [];
+        }
+        
+        final movies = moviesJson
+            .map((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
+        
+        Logger.info('Trending movies fetched: ${movies.length} movies');
+        return movies;
+      } else {
+        Logger.warning('Failed to fetch trending movies: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      Logger.error('Failed to fetch trending movies: $e');
+      return [];
+    }
   }
 
   /// Get popular movies from API
@@ -139,7 +167,7 @@ class MovieService {
               'releaseYear': json['releaseYear'],
               'views': json['views'],
             };
-            return Movie.fromJson(movieJson as Map<String, dynamic>);
+            return Movie.fromJson(movieJson);
           }).toList();
           Logger.info('Popular series fetched from list: ${series.length} series');
           return series;
@@ -296,6 +324,176 @@ class MovieService {
       }
     } catch (e) {
       Logger.error('Failed to fetch related movies: $e');
+      return [];
+    }
+  }
+
+  /// Get recommended movies from API
+  Future<List<Movie>> getRecommendedMovies() async {
+    try {
+      Logger.info('Fetching recommended movies from API...');
+      
+      final response = await _apiService.get(ApiEndpoints.recommendedMovies);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final responseData = response.data;
+        
+        // Handle response format: {success: true, data: [...]}
+        List<dynamic> moviesJson;
+        if (responseData is Map<String, dynamic> && responseData['data'] != null) {
+          moviesJson = responseData['data'] as List<dynamic>;
+        } else if (responseData is List) {
+          moviesJson = responseData;
+        } else {
+          Logger.warning('Unexpected response format for recommended movies');
+          return [];
+        }
+        
+        final movies = moviesJson
+            .map((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
+        
+        Logger.info('Recommended movies fetched: ${movies.length} movies');
+        return movies;
+      } else {
+        Logger.warning('Failed to fetch recommended movies: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      Logger.error('Failed to fetch recommended movies: $e');
+      return [];
+    }
+  }
+
+  /// Get new release movies from API
+  Future<List<Movie>> getNewReleaseMovies() async {
+    try {
+      Logger.info('Fetching new release movies from API...');
+      
+      final response = await _apiService.get(ApiEndpoints.newReleaseMovies);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final responseData = response.data;
+        
+        // Handle response format: {success: true, data: [...]}
+        List<dynamic> moviesJson;
+        if (responseData is Map<String, dynamic> && responseData['data'] != null) {
+          moviesJson = responseData['data'] as List<dynamic>;
+        } else if (responseData is List) {
+          moviesJson = responseData;
+        } else {
+          Logger.warning('Unexpected response format for new release movies');
+          return [];
+        }
+        
+        final movies = moviesJson
+            .map((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
+        
+        Logger.info('New release movies fetched: ${movies.length} movies');
+        return movies;
+      } else {
+        Logger.warning('Failed to fetch new release movies: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      Logger.error('Failed to fetch new release movies: $e');
+      return [];
+    }
+  }
+
+  /// Get new release series from API
+  Future<List<Movie>> getNewReleaseSeries() async {
+    try {
+      Logger.info('Fetching new release series from API...');
+      
+      final response = await _apiService.get(ApiEndpoints.newReleaseSeries);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final responseData = response.data;
+        
+        // Handle response format: {success: true, data: [...]}
+        List<dynamic> seriesJson;
+        if (responseData is Map<String, dynamic> && responseData['data'] != null) {
+          seriesJson = responseData['data'] as List<dynamic>;
+        } else if (responseData is List) {
+          seriesJson = responseData;
+        } else {
+          Logger.warning('Unexpected response format for new release series');
+          return [];
+        }
+        
+        // Convert series to Movie objects, handling series-specific fields
+        final series = seriesJson.map((json) {
+          // Map series fields to Movie fields
+          final movieJson = {
+            '_id': json['_id'],
+            'title': json['title'],
+            'description': json['description'],
+            'thumbnail': json['seriesThumbnail'] ?? json['thumbnail'], // Use seriesThumbnail if available
+            'trailer': json['trailer'],
+            'releaseYear': json['releaseYear'],
+            'views': json['views'],
+          };
+          return Movie.fromJson(movieJson);
+        }).toList();
+        
+        Logger.info('New release series fetched: ${series.length} series');
+        return series;
+      } else {
+        Logger.warning('Failed to fetch new release series: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      Logger.error('Failed to fetch new release series: $e');
+      return [];
+    }
+  }
+
+  /// Get recommended series from API
+  Future<List<Movie>> getRecommendedSeries() async {
+    try {
+      Logger.info('Fetching recommended series from API...');
+      
+      final response = await _apiService.get(ApiEndpoints.recommendedSeries);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final responseData = response.data;
+        
+        // Handle response format: {success: true, data: [...]}
+        List<dynamic> seriesJson;
+        if (responseData is Map<String, dynamic> && responseData['data'] != null) {
+          seriesJson = responseData['data'] as List<dynamic>;
+        } else if (responseData is List) {
+          seriesJson = responseData;
+        } else {
+          Logger.warning('Unexpected response format for recommended series');
+          return [];
+        }
+        
+        // Convert series to Movie objects, handling series-specific fields
+        final series = seriesJson.map((json) {
+          // Map series fields to Movie fields
+          final movieJson = {
+            '_id': json['_id'],
+            'title': json['title'],
+            'description': json['description'],
+            'thumbnail': json['seriesThumbnail'] ?? json['thumbnail'], // Use seriesThumbnail if available
+            'trailer': json['trailer'],
+            'releaseYear': json['releaseYear'],
+            'views': json['views'],
+          };
+          return Movie.fromJson(movieJson);
+        }).toList();
+        
+        Logger.info('Recommended series fetched: ${series.length} series');
+        return series;
+      } else {
+        Logger.warning('Failed to fetch recommended series: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      Logger.error('Failed to fetch recommended series: $e');
       return [];
     }
   }
