@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
+import 'package:urock_media_movie_app/core/constants/app_strings.dart';
 import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/features/profile/data/model/faq_model.dart';
 import 'package:urock_media_movie_app/features/profile/data/model/profile_model.dart';
@@ -41,6 +42,9 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("in fetching profile", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();
@@ -77,6 +81,9 @@ class ProfileController extends ChangeNotifier {
       Navigator.of(context).pushReplacementNamed(AppRoutes.profile);
     } catch (e) {
       Logger.error("edit profile", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();
@@ -94,12 +101,19 @@ class ProfileController extends ChangeNotifier {
       'newPassword': newPassword,
       'confirmPassword': confirmPassword,
     };
-    final response = await ProfileRepo.changePasswordRepo(body);
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text(response.first.toString())));
-    if (response.last) {
-      Navigator.of(context).pop();
+    try {
+      final response = await ProfileRepo.changePasswordRepo(body);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(response.first.toString())));
+      if (response.last) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      Logger.error("change password", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     }
   }
 
@@ -109,7 +123,7 @@ class ProfileController extends ChangeNotifier {
     // TODO: Implement logout
   }
 
-  void loadPrivacyPolicy() async {
+  void loadPrivacyPolicy(BuildContext context) async {
     isLoading = true;
     notifyListeners();
     try {
@@ -119,13 +133,16 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("privacy", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  void loadTerm() async {
+  void loadTerm(BuildContext context) async {
     isLoading = true;
     notifyListeners();
     try {
@@ -135,13 +152,16 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("terms", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  void loadAbout() async {
+  void loadAbout(BuildContext context) async {
     isLoading = true;
     notifyListeners();
     try {
@@ -151,6 +171,9 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("about", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();
@@ -184,10 +207,13 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("send support", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     }
   }
 
-  void loadFaq() async {
+  void loadFaq(BuildContext context) async {
     isLoading = true;
     notifyListeners();
     try {
@@ -199,6 +225,9 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("faq", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading = false;
       notifyListeners();

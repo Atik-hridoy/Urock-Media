@@ -18,7 +18,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadPrivacyPolicy();
+    _controller.loadPrivacyPolicy(context);
   }
 
   @override
@@ -46,7 +46,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
         animation: _controller,
         builder: (context, child) => _controller.privacyPolicy.isEmpty
             ? NoData(
-                onPressed: () => _controller.loadPrivacyPolicy(),
+                onPressed: () => _controller.loadPrivacyPolicy(context),
                 text: "No privacy policy found",
               )
             : SingleChildScrollView(

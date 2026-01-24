@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
+import 'package:urock_media_movie_app/core/constants/app_strings.dart';
 import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/core/services/storage_service.dart';
 import 'package:urock_media_movie_app/features/chat/data/model/message_model.dart';
@@ -22,7 +24,7 @@ class ChatController extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   /// Load chat messages
-  Future<void> loadMessages() async {
+  Future<void> loadMessages(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
@@ -33,6 +35,9 @@ class ChatController extends ChangeNotifier {
       _messages = await MessageRepo.loadMessageRepo(chatId);
     } catch (e, stackTrace) {
       Logger.error('Failed to load messages', e, stackTrace);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       _isLoading = false;
       notifyListeners();

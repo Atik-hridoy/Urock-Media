@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:urock_media_movie_app/features/marketplace/presentation/category_product_screen.dart';
 import 'package:urock_media_movie_app/features/profile/presentation/about_screen.dart';
+import 'package:urock_media_movie_app/features/profile/presentation/preference_screen.dart';
 import 'package:urock_media_movie_app/features/profile/presentation/term_condition_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
@@ -62,6 +63,7 @@ class AppRoutes {
   static const String categoryProduct = '/category-product';
   static const String termCondition = "/term-condition";
   static const String about = "/about";
+  static const String preference = "/preference";
 
   /// Generate routes with TV detection
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -226,6 +228,11 @@ class AppRoutes {
           builder: (_) => const ChangePasswordScreen(),
           settings: settings,
         );
+      case preference:
+        return MaterialPageRoute(
+          builder: (_) => const PreferenceScreen(),
+          settings: settings,
+        );
 
       case marketplace:
         return MaterialPageRoute(
@@ -310,5 +317,6 @@ class AppRoutes {
     categoryProduct,
     termCondition,
     about,
+    preference,
   ];
 }

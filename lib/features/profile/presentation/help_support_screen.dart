@@ -180,14 +180,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     );
   }
 
-  void _sendMessage() {
-    // TODO: Implement send message functionality
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Your message has been sent successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
+  // void _sendMessage() {
+  //   // TODO: Implement send message functionality
+  //   Navigator.pop(context);
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(
+  //       content: Text('Your message has been sent successfully'),
+  //       backgroundColor: Colors.green,
+  //     ),
+  //   );
+  // }
 }

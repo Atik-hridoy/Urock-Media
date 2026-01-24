@@ -26,7 +26,7 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadCategoryProducts(widget.id);
+    _controller.loadCategoryProducts(context, widget.id);
   }
 
   @override
@@ -60,7 +60,9 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             );
           }
           if (_controller.categoryProduct.isEmpty) {
-            return NoData(onPressed: () => _controller.onRefresh(widget.id));
+            return NoData(
+              onPressed: () => _controller.onRefresh(context, widget.id),
+            );
           }
           return Padding(
             padding: const EdgeInsets.all(16),

@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // TODO: implement initState
     super.initState();
     _controller.chatId = widget.chatId;
-    _controller.loadMessages();
+    _controller.loadMessages(context);
   }
 
   @override

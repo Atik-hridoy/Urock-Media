@@ -29,16 +29,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   final List<String> sizes = ['S', 'M', 'L', 'XL', 'XXL'];
   final _controller = ProductDetailsController();
-  
+
   @override
   void initState() {
     super.initState();
-    _controller.loadSingleProduct(widget.id);
+    _controller.loadSingleProduct(context, widget.id);
   }
 
   String? _getSelectedColor() {
     final item = _controller.singleProduct;
-    final colorVariant = item.variantTypes.firstWhereOrNull((e) => e.name == "Color");
+    final colorVariant = item.variantTypes.firstWhereOrNull(
+      (e) => e.name == "Color",
+    );
     if (colorVariant == null || colorVariant.options.isEmpty) return null;
     if (_selectedColorIndex >= colorVariant.options.length) return null;
     return colorVariant.options[_selectedColorIndex].name;
@@ -46,7 +48,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   String? _getSelectedSize() {
     final item = _controller.singleProduct;
-    final sizeVariant = item.variantTypes.firstWhereOrNull((e) => e.name == "Size");
+    final sizeVariant = item.variantTypes.firstWhereOrNull(
+      (e) => e.name == "Size",
+    );
     if (sizeVariant == null || sizeVariant.options.isEmpty) return null;
     if (_selectedSizeIndex >= sizeVariant.options.length) return null;
     return sizeVariant.options[_selectedSizeIndex].name;
@@ -68,12 +72,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     if (item.productType == 'simple') {
       return item.price;
     }
-    
+
     // For variable products, check if variants exist and index is valid
     if (item.variants.isNotEmpty && _selectedSizeIndex < item.variants.length) {
       return item.variants[_selectedSizeIndex].price;
     }
-    
+
     // Fallback to minPrice
     return item.minPrice;
   }
@@ -235,8 +239,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           (context, error, stackTrace) => Icon(
                                             Icons.checkroom,
                                             size: 50,
-                                            color: Colors.white.withValues(alpha :
-                                              0.3,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.3,
                                             ),
                                           ),
                                     ),
@@ -562,6 +566,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         child: OutlinedButton(
                           onPressed: () async {
                             if (await _controller.addToCart(
+                              context,
                               index: _selectedSizeIndex,
                               color: _getSelectedColor(),
                               size: _getSelectedSize(),
@@ -571,7 +576,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   ..clearSnackBars()
                                   ..showSnackBar(
                                     const SnackBar(
-                                      content: Text("Added to cart successfully"),
+                                      content: Text(
+                                        "Added to cart successfully",
+                                      ),
                                     ),
                                   );
                               }
@@ -580,7 +587,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 ScaffoldMessenger.of(context)
                                   ..clearSnackBars()
                                   ..showSnackBar(
-                                    const SnackBar(content: Text("Failed to add cart")),
+                                    const SnackBar(
+                                      content: Text("Failed to add cart"),
+                                    ),
                                   );
                               }
                             }

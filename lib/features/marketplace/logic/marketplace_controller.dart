@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:urock_media_movie_app/core/config/api_endpoints.dart';
+import 'package:urock_media_movie_app/core/constants/app_strings.dart';
 import 'package:urock_media_movie_app/core/services/api_service.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/cart_model.dart';
 import 'package:urock_media_movie_app/features/marketplace/data/model/category_model.dart';
@@ -36,7 +37,7 @@ class MarketplaceController extends ChangeNotifier {
   ); // [0 -> category, 1 -> feature product, 2 -> popular product, 3 -> trending product]
 
   /// Load products
-  Future<void> loadProducts() async {
+  Future<void> loadProducts(BuildContext context) async {
     if (isLoading[1] || !hasMore[1]) return;
     if (page[1] == 1) {
       _products.clear();
@@ -55,13 +56,16 @@ class MarketplaceController extends ChangeNotifier {
       // _products = [];
     } catch (e, stackTrace) {
       Logger.error('Failed to load products', e, stackTrace);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading[1] = false;
       notifyListeners();
     }
   }
 
-  Future<void> loadTrendingProducts() async {
+  Future<void> loadTrendingProducts(BuildContext context) async {
     if (isLoading[3] || !hasMore[3]) return;
     if (page[3] == 1) {
       trendingProduct.clear();
@@ -83,13 +87,16 @@ class MarketplaceController extends ChangeNotifier {
       // _products = [];
     } catch (e, stackTrace) {
       Logger.error('Failed to load tranding products', e, stackTrace);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading[3] = false;
       notifyListeners();
     }
   }
 
-  Future<void> loadPopularProducts() async {
+  Future<void> loadPopularProducts(BuildContext context) async {
     if (isLoading[2] || !hasMore[2]) return;
     if (page[2] == 1) {
       popularProduct.clear();
@@ -108,6 +115,9 @@ class MarketplaceController extends ChangeNotifier {
       // _products = [];
     } catch (e, stackTrace) {
       Logger.error('Failed to load products', e, stackTrace);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading[2] = false;
       notifyListeners();
@@ -122,7 +132,7 @@ class MarketplaceController extends ChangeNotifier {
   }
 
   /// Search products
-  void searchProducts(String query) async {
+  void searchProducts(BuildContext context, String query) async {
     Logger.info('Searching products: $query');
     isLoading.first = true;
     notifyListeners();
@@ -137,19 +147,25 @@ class MarketplaceController extends ChangeNotifier {
       // _products = [];
     } catch (e, stackTrace) {
       Logger.error('Failed to load filtered products', e, stackTrace);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading.first = false;
       notifyListeners();
     }
   }
 
-  void fetchCart() async {
+  void fetchCart(BuildContext context) async {
     isLoading.first = true;
     notifyListeners();
     try {
       cartItem.value = await ProductRepository.fetchCart();
     } catch (e) {
       Logger.error("fetch cart controller", e.toString());
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
       cartItem.value = CartModel.empty();
     } finally {
       isLoading.first = false;
@@ -157,12 +173,12 @@ class MarketplaceController extends ChangeNotifier {
     }
   }
 
-  Future onRefreshCart() async {
-    fetchCart();
+  Future onRefreshCart(BuildContext context) async {
+    fetchCart(context);
     notifyListeners();
   }
 
-  onquantityIncrease(String id, String? variantId) async {
+  onquantityIncrease(BuildContext context, String id, String? variantId) async {
     try {
       // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity++;
       await ApiService().patch(
@@ -171,12 +187,15 @@ class MarketplaceController extends ChangeNotifier {
       );
     } catch (e) {
       Logger.error("quantity increase", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       notifyListeners();
     }
   }
 
-  onQuantityDecrease(String id, String? variantId) async {
+  onQuantityDecrease(BuildContext context, String id, String? variantId) async {
     try {
       // cartItem.value!.products.firstWhere((e) => e.product.id == id).quantity--;
       await ApiService().patch(
@@ -185,6 +204,9 @@ class MarketplaceController extends ChangeNotifier {
       );
     } catch (e) {
       Logger.error("quantity decrease", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       notifyListeners();
     }
@@ -211,7 +233,7 @@ class MarketplaceController extends ChangeNotifier {
     }
   }
 
-  void fetchCategory() async {
+  void fetchCategory(BuildContext context) async {
     if (isLoading[0] || !hasMore[0]) return;
     if (page[0] == 1) {
       categories.clear();
@@ -227,6 +249,9 @@ class MarketplaceController extends ChangeNotifier {
       page[0]++;
     } catch (e) {
       Logger.error("fetch category", e);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.errorGeneric)));
     } finally {
       isLoading[0] = false;
       notifyListeners();
@@ -245,13 +270,13 @@ class MarketplaceController extends ChangeNotifier {
     }
   }
 
-  Future onRefresh() async {
+  Future onRefresh(BuildContext context) async {
     page = [1, 1, 1, 1];
     hasMore = [true, true, true, true];
-    loadProducts();
-    fetchCategory();
-    loadPopularProducts();
-    loadTrendingProducts();
+    loadProducts(context);
+    fetchCategory(context);
+    loadPopularProducts(context);
+    loadTrendingProducts(context);
     notifyListeners();
   }
 }

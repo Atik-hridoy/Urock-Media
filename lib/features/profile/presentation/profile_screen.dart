@@ -166,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.tune,
                 title: 'Preference',
                 onTap: () {
-                  // TODO: Navigate to preferences
+                  Navigator.of(context).pushNamed(AppRoutes.preference);
                 },
               ),
               ProfileMenuItem(

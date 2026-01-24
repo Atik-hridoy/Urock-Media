@@ -18,7 +18,7 @@ class _AboutScreenState extends State<AboutScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadAbout();
+    _controller.loadAbout(context);
   }
 
   @override
@@ -46,7 +46,7 @@ class _AboutScreenState extends State<AboutScreen> {
         animation: _controller,
         builder: (context, child) => _controller.about.isEmpty
             ? NoData(
-                onPressed: () => _controller.loadAbout(),
+                onPressed: () => _controller.loadAbout(context),
                 text: "No about us found",
               )
             : SingleChildScrollView(

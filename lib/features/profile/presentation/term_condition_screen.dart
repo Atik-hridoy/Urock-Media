@@ -18,7 +18,7 @@ class _TermConditionScreenState extends State<TermConditionScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadTerm();
+    _controller.loadTerm(context);
   }
 
   @override
@@ -46,7 +46,7 @@ class _TermConditionScreenState extends State<TermConditionScreen> {
         animation: _controller,
         builder: (context, child) => _controller.terms.isEmpty
             ? NoData(
-                onPressed: () => _controller.loadTerm(),
+                onPressed: () => _controller.loadTerm(context),
                 text: "No term and condition found",
               )
             : SingleChildScrollView(

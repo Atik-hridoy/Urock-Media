@@ -21,7 +21,7 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.fetchCart();
+    _controller.fetchCart(context);
   }
 
   // final List<Map<String, dynamic>> cartItems = [
@@ -88,14 +88,14 @@ class _CartScreenState extends State<CartScreen> {
             );
           }
           if (cart == null || cart.products.isEmpty) {
-            return NoData(onPressed: () => _controller.onRefreshCart());
+            return NoData(onPressed: () => _controller.onRefreshCart(context));
           }
           return Column(
             children: [
               Expanded(
                 child: RefreshIndicator.adaptive(
                   color: AppColors.white,
-                  onRefresh: () => _controller.onRefreshCart(),
+                  onRefresh: () => _controller.onRefreshCart(context),
                   child: ListView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
@@ -115,6 +115,7 @@ class _CartScreenState extends State<CartScreen> {
                             item.quantity += 1;
                           });
                           _controller.onquantityIncrease(
+                            context,
                             item.product.id,
                             item.variantId,
                           );
@@ -124,6 +125,7 @@ class _CartScreenState extends State<CartScreen> {
                             item.quantity -= 1;
                           });
                           _controller.onQuantityDecrease(
+                            context,
                             item.product.id,
                             item.variantId,
                           );

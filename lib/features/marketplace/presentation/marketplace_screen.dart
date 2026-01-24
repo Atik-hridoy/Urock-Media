@@ -34,32 +34,32 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.fetchCategory();
-    _controller.loadProducts();
-    _controller.loadPopularProducts();
-    _controller.loadTrendingProducts();
+    _controller.fetchCategory(context);
+    _controller.loadProducts(context);
+    _controller.loadPopularProducts(context);
+    _controller.loadTrendingProducts(context);
     _scrollController[1].addListener(() {
       if (_scrollController[1].position.pixels >=
           _scrollController[1].position.maxScrollExtent - 200) {
-        _controller.loadProducts();
+        _controller.loadProducts(context);
       }
     });
     _scrollController[2].addListener(() {
       if (_scrollController[2].position.pixels >=
           _scrollController[2].position.maxScrollExtent - 200) {
-        _controller.loadPopularProducts();
+        _controller.loadPopularProducts(context);
       }
     });
     _scrollController[3].addListener(() {
       if (_scrollController[3].position.pixels >=
           _scrollController[3].position.maxScrollExtent - 200) {
-        _controller.loadTrendingProducts();
+        _controller.loadTrendingProducts(context);
       }
     });
     _scrollController[0].addListener(() {
       if (_scrollController[0].position.pixels >=
           _scrollController[0].position.maxScrollExtent - 200) {
-        _controller.fetchCategory();
+        _controller.fetchCategory(context);
       }
     });
   }
@@ -103,7 +103,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         animation: _controller,
         builder: (context, child) => RefreshIndicator.adaptive(
           color: AppColors.white,
-          onRefresh: () => _controller.onRefresh(),
+          onRefresh: () => _controller.onRefresh(context),
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Column(
@@ -140,7 +140,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                               ),
                             ),
                             onSubmitted: (value) =>
-                                _controller.searchProducts(value),
+                                _controller.searchProducts(context, value),
                           ),
                         ),
                       ),

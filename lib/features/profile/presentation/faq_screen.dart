@@ -18,7 +18,7 @@ class _FaqScreenState extends State<FaqScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller.loadFaq();
+    _controller.loadFaq(context);
   }
 
   final List<Map<String, String>> faqs = const [
@@ -92,7 +92,7 @@ class _FaqScreenState extends State<FaqScreen> {
           }
           if (_controller.faqs.isEmpty) {
             return NoData(
-              onPressed: () => _controller.loadFaq(),
+              onPressed: () => _controller.loadFaq(context),
               text: "No FAQ Found",
             );
           }
