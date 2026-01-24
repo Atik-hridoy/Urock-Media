@@ -27,27 +27,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _controller.loadProfile(context);
   }
 
-  Widget _showProfileImage() {
-    final image = _controller.profile.image;
-    if (image == "") {
-      return CircleAvatar(
+  Widget _showProfileImage(String image) {
+    return Image.network(
+      "${ApiConfig.imageUrl}$image",
+      fit: BoxFit.cover,
+      height: 100,
+      width: 100,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+
+        final expected = loadingProgress.expectedTotalBytes;
+        final loaded = loadingProgress.cumulativeBytesLoaded;
+
+        return Center(
+          child: CircularProgressIndicator.adaptive(
+            value: expected != null ? loaded / expected : null,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) => CircleAvatar(
         radius: 50,
         backgroundColor: Colors.grey[800],
         child: const Icon(Icons.person, size: 50, color: Colors.white),
-      );
-    } else {
-      return Image.network(
-        "${ApiConfig.imageUrl}$image",
-        fit: BoxFit.cover,
-        height: 100,
-        width: 100,
-        errorBuilder: (context, error, stackTrace) => CircleAvatar(
-          radius: 50,
-          backgroundColor: Colors.grey[800],
-          child: const Icon(Icons.person, size: 50, color: Colors.white),
-        ),
-      );
-    }
+      ),
+    );
   }
 
   @override
@@ -74,161 +77,164 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: AnimatedBuilder(
           animation: _controller,
-          builder: (context, child) => Column(
-            children: [
-              const SizedBox(height: 24),
-              // Profile Header
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _showProfileImage(),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _controller.profile.name,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+          builder: (context, child) {
+            final profile = _controller.profile;
+            return Column(
+              children: [
+                const SizedBox(height: 24),
+                // Profile Header
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: _showProfileImage(profile.image),
                 ),
-              ),
-              if (_controller.profile.userName.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 16),
                 Text(
-                  _controller.profile.userName,
+                  profile.name,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 14,
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (profile.userName.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    profile.userName,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                // Get Subscription Banner
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.goldLight, Colors.orange[700]!],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.workspace_premium,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Get Subscription',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              'Unlimited free Smooth for the movies!',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: Colors.black),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Menu Items
+                ProfileMenuItem(
+                  icon: Icons.edit_outlined,
+                  title: 'Edit profile',
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/edit-profile');
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.tune,
+                  title: 'Preference',
+                  onTap: () {
+                    Navigator.of(context).pushNamed(AppRoutes.preference);
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.security_outlined,
+                  title: 'Security',
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/change-password');
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.help_outline,
+                  title: 'Help & Support',
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/help-support');
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy Policy',
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/privacy-policy');
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Term and Condition',
+                  onTap: () {
+                    Navigator.of(context).pushNamed(AppRoutes.termCondition);
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'About Us',
+                  onTap: () {
+                    Navigator.of(context).pushNamed(AppRoutes.about);
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.card_membership_outlined,
+                  title: 'Subscription',
+                  onTap: () {
+                    // TODO: Navigate to subscription
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.quiz_outlined,
+                  title: 'Faq',
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/faq');
+                  },
+                ),
+                ProfileMenuItem(
+                  icon: Icons.logout,
+                  title: 'Logout',
+                  isDestructive: true,
+                  onTap: () {
+                    _showLogoutDialog();
+                  },
+                ),
+                const SizedBox(height: 24),
               ],
-              const SizedBox(height: 24),
-              // Get Subscription Banner
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.goldLight, Colors.orange[700]!],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.workspace_premium,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Get Subscription',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            'Unlimited free Smooth for the movies!',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right, color: Colors.black),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Menu Items
-              ProfileMenuItem(
-                icon: Icons.edit_outlined,
-                title: 'Edit profile',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/edit-profile');
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.tune,
-                title: 'Preference',
-                onTap: () {
-                  Navigator.of(context).pushNamed(AppRoutes.preference);
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.security_outlined,
-                title: 'Security',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/change-password');
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.help_outline,
-                title: 'Help & Support',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/help-support');
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.privacy_tip_outlined,
-                title: 'Privacy Policy',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/privacy-policy');
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.privacy_tip_outlined,
-                title: 'Term and Condition',
-                onTap: () {
-                  Navigator.of(context).pushNamed(AppRoutes.termCondition);
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.privacy_tip_outlined,
-                title: 'About Us',
-                onTap: () {
-                  Navigator.of(context).pushNamed(AppRoutes.about);
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.card_membership_outlined,
-                title: 'Subscription',
-                onTap: () {
-                  // TODO: Navigate to subscription
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.quiz_outlined,
-                title: 'Faq',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/faq');
-                },
-              ),
-              ProfileMenuItem(
-                icon: Icons.logout,
-                title: 'Logout',
-                isDestructive: true,
-                onTap: () {
-                  _showLogoutDialog();
-                },
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            );
+          },
         ),
       ),
       bottomNavigationBar: BottomNavBar(
@@ -334,6 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                         StorageService.removeToken();
+                        StorageService.removeUserData();
                         Navigator.of(context).pushNamed(AppRoutes.auth);
                         // TODO: Implement logout functionality
                       },

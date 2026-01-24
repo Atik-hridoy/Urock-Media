@@ -34,7 +34,7 @@ class ProfileResponseModel {
 
 class ProfileModel {
   final String id;
-  final String name;
+  String name;
   final String userName;
   final String role;
   final String email;

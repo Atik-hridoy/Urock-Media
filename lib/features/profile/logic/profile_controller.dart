@@ -51,11 +51,6 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-  void setProfileImage(String image) {
-    profile.image = image;
-    notifyListeners();
-  }
-
   /// Update profile
   Future<void> updateProfile(
     BuildContext context, {
@@ -73,12 +68,15 @@ class ProfileController extends ChangeNotifier {
         name: name,
         userName: userName,
       );
-      setProfileImage(response.last);
-      notifyListeners();
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(response.first)));
-      Navigator.of(context).pushReplacementNamed(AppRoutes.profile);
+      if (response.last != "") {
+        profile.image = response.last;
+        if (name != null) profile.name = name;
+        notifyListeners();
+        Navigator.of(context).pushReplacementNamed(AppRoutes.profile);
+      }
     } catch (e) {
       Logger.error("edit profile", e);
       ScaffoldMessenger.of(context)

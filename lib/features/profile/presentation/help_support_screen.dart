@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urock_media_movie_app/core/services/storage_service.dart';
 import 'package:urock_media_movie_app/features/profile/logic/profile_controller.dart';
 import '../../../core/constants/app_colors.dart';
 
@@ -15,6 +16,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _nameController.text = StorageService.getUserData()?['name'];
+    _emailController.text = StorageService.getUserData()?['email'];
+  }
 
   @override
   void dispose() {
