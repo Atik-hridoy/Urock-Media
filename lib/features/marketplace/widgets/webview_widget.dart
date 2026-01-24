@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:urock_media_movie_app/core/constants/app_colors.dart';
 import 'package:urock_media_movie_app/core/utils/logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -42,7 +41,7 @@ class _WebviewCustomWidgetState extends State<WebviewCustomWidget> {
                 );
             }
             if (request.url.contains("ticket-purchases/cancel")) {
-              Get.back();
+              Navigator.pop(context);
             }
 
             return NavigationDecision.navigate;

@@ -44,97 +44,25 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       ),
       body: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) => _controller.privacyPolicy.isEmpty
-            ? NoData(
-                onPressed: () => _controller.loadPrivacyPolicy(context),
-                text: "No privacy policy found",
-              )
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Html(data: _controller.privacyPolicy),
-                // child: Column(
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                //     Text(
-                //       'Effective Date: 26 Jan 2026',
-                //       style: TextStyle(
-                //         color: Colors.white.withOpacity(0.6),
-                //         fontSize: 12,
-                //       ),
-                //     ),
-                //     const SizedBox(height: 16),
-                //     Text(
-                //       'We value your privacy and are committed to protecting your personal information. By using our app, you agree to the following terms.',
-                //       style: TextStyle(
-                //         color: Colors.white.withOpacity(0.8),
-                //         fontSize: 14,
-                //         height: 1.5,
-                //       ),
-                //     ),
-                //     const SizedBox(height: 24),
-                //     _buildSection(
-                //       'Information We Collect',
-                //       [
-                //         'Personal Info: Your name, email, payment details, and other info you provide.',
-                //         'Usage Data: Information about how you use the app, device type, and preferences.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'How We Use Your Information',
-                //       [
-                //         'To provide and improve our services.',
-                //         'To send you updates, recommendations, and promotions.',
-                //         'To process your purchases and subscriptions.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Sharing Your Information',
-                //       [
-                //         'With Service Providers: We may share data with trusted partners to help us operate the app.',
-                //         'For Legal Reasons: If required by law or to protect our rights.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Your Rights',
-                //       [
-                //         'You can access, update, or delete your personal information at any time.',
-                //         'You can opt out of receiving notifications and manage preferences in the app settings.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Security',
-                //       [
-                //         'We use secure methods to protect your information, but cannot guarantee complete security.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Third-Party Links',
-                //       [
-                //         'Our app may link to other websites or services. We are not responsible for their privacy practices.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Cookies',
-                //       [
-                //         'We use cookies to improve your app experience. You can manage them in your settings.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Children\'s Privacy',
-                //       [
-                //         'Our app is not for children under 13. We do not knowingly collect data from children.',
-                //       ],
-                //     ),
-                //     _buildSection(
-                //       'Changes to This Policy',
-                //       [
-                //         'We may update this policy. Any changes will be reflected here.',
-                //       ],
-                //     ),
-                //     const SizedBox(height: 24),
-                //   ],
-                // ),
+        builder: (context, child) {
+          if (_controller.isLoading) {
+            return Center(
+              child: CircularProgressIndicator.adaptive(
+                backgroundColor: AppColors.white,
               ),
+            );
+          }
+          if (_controller.privacyPolicy.isEmpty) {
+            return NoData(
+              onPressed: () => _controller.loadPrivacyPolicy(context),
+              text: "No privacy policy found",
+            );
+          }
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Html(data: _controller.privacyPolicy),
+          );
+        },
       ),
     );
   }
